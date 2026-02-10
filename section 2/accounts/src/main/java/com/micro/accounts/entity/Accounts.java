@@ -7,20 +7,21 @@ import lombok.*;
 @Entity
 @Table(name = "accounts")
 @Getter@Setter@NoArgsConstructor@AllArgsConstructor@ToString
-public class Accounts extends BaseEntity{
-
-
-    @Column(name="customer_id")
-    private Long customerId;
+public class Accounts extends BaseEntity {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
-    @Column(name="account_number")
-    private Long accountNumber;
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;   // internal primary key
 
-    @Column(name="account_type")
+    @Column(name = "customer_id", nullable = false)
+    private Long customerId;
+
+    @Column(name = "account_number", unique = true, nullable = false)
+    private Long accountNumber;  // business account number (random)
+
+    @Column(name = "account_type")
     private String accountType;
 
-    @Column(name="branch_address")
+    @Column(name = "branch_address")
     private String branchAddress;
 }
