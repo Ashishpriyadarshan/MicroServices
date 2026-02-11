@@ -9,6 +9,7 @@ import com.micro.accounts.service.impl.AccountsServiceImpl;
 import lombok.AllArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
+import org.springframework.http.RequestEntity;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -38,4 +39,18 @@ public class AccountsController {
         //But they will never get the overall status of their request like your reponse will lack the HttpStatus codes so it is not a good practice.
     }
 
+
+    /**
+     *
+     * @param mobileNumber since we are using RequestParam thats why the API request is going to be /fetch?mobileNumber=1234567890
+     *                     but if it was PathVariable then the URL would have looked like /fetch/{mobileNumber}
+     * @return
+     */
+    @GetMapping("/fetch")
+    public ResponseEntity<CustomerDto> fetchAccountDetails(@RequestParam String mobileNumber)
+    {
+        CustomerDto customerDto = accountsServiceImpl.fetchAccount(mobileNumber);
+
+        return ResponseEntity.status(HttpStatus.OK).body(customerDto);
+    }
 }
