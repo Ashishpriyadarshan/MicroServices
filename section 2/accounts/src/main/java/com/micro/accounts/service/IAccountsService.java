@@ -2,6 +2,7 @@ package com.micro.accounts.service;
 
 
 import com.micro.accounts.dto.CustomerDto;
+import com.micro.accounts.entity.Customer;
 
 
 public interface IAccountsService {
@@ -22,4 +23,14 @@ public interface IAccountsService {
      * @return
      */
     CustomerDto fetchAccount(String mobileNumber);
+
+
+    /**
+     *
+     * @param customerDto takes a object of type CustomerDto and then triggers a update/PUT request in the DB
+     *                    you can change whatever field you want but not the AccountNumber .
+     *                    You can change any field of the Customer or Accounts Entity other than the AccountNumber
+     * @return
+     */
+    boolean updateAccount(CustomerDto customerDto);
 }
