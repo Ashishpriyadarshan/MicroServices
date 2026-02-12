@@ -157,6 +157,39 @@ public class AccountsServiceImpl implements IAccountsService {
         }
         return isUpdated;
     }
+
+    /**
+     * The below function will take the mobileNumber as a input from the controller . The Api endpoint will receive a mobileNumber.
+     * and on the basis of the mobile number first check if the Resource is present in both the Accounts and Customer table or not
+     * if they are present then delete the records belonging to that particular mobile number
+     *
+     * @param mobileNumber
+     * @return
+     */
+    @Override
+    public boolean deleteAccount(String mobileNumber) {
+
+        //first check if any record exists or not.
+        boolean isDeleted=false;
+
+        Customer customer = customerRepository.findByMobileNumber(mobileNumber).orElseThrow(
+                ()->new ResourceNotFoundException("Customer","Mobile Number",mobileNumber));
+
+        Accounts accounts = accountsRepository.findByCustomerId(customer.getCustomerId()).
+                orElseThrow(()->new ResourceNotFoundException("Account","mobileNumber",mobileNumber));
+
+        accountsRepository.delete(accounts);
+        customerRepository.delete(customer);
+
+        if(!accountsRepository.existsById(accounts.getId()) && !customerRepository.existsById(customer.getCustomerId()))
+        {
+            isDeleted=true;
+            return isDeleted;
+        }
+
+
+        return isDeleted;
+    }
 }
 
 

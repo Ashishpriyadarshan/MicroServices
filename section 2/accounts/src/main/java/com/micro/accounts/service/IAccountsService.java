@@ -33,4 +33,14 @@ public interface IAccountsService {
      * @return
      */
     boolean updateAccount(CustomerDto customerDto);
+
+
+    /**
+     * The below function will take the moboleNumber as a input from the controller . The Api endpoint will receive a mobileNumber.
+     * and on the basis of the mobile number first check if the Resource is present in both the Accounts and Customer table or not
+     *  if they are present then delete the records belonging to that particular mobile number
+     * @param mobileNumber
+     * @return
+     */
+    public boolean deleteAccount(String mobileNumber);
 }
