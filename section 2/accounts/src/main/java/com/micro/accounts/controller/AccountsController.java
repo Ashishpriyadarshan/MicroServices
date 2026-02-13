@@ -10,6 +10,7 @@ import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.Pattern;
 import lombok.AllArgsConstructor;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.RequestEntity;
@@ -29,7 +30,8 @@ import java.lang.annotation.Repeatable;
 public class AccountsController {
 
 
-    private AccountsServiceImpl accountsServiceImpl;
+    @Qualifier("accountsServiceImplV1")
+    private IAccountsService accountsServiceImpl;
 
     @PostMapping("/create")
     //we need PostMapping as this is a create operation
