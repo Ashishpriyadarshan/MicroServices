@@ -51,10 +51,9 @@ public class AccountsServiceImpl implements IAccountsService {
                     +customerDto.getMobileNumber());
         }
 
-        customer.setCreatedAt(LocalDateTime.now());
-        customer.setCreatedBy("AshishBanker");
+        //deleted the CreatedAt and CreatedBy setters as we are now using JPAAuditing
+//        we used this manually setting the updatedat time customer.setUpdatedAt(LocalDateTime.now());
         Customer savedCustomer = customerRepository.save(customer);
-
         accountsRepository.save(createNewAccount(savedCustomer));
     }
 
@@ -78,9 +77,7 @@ public class AccountsServiceImpl implements IAccountsService {
         newAccount.setAccountNumber(randomAccNumber);
         newAccount.setAccountType(AccountsConstants.SAVINGS);
         newAccount.setBranchAddress(AccountsConstants.ADDRESS);
-
-        newAccount.setCreatedAt(LocalDateTime.now());
-        newAccount.setCreatedBy("AshishBanker");
+       //deleted the manual value insertion of createdAt and createdBy as we are using JPAAuditing now
         return newAccount;
 
     }
@@ -151,6 +148,7 @@ public class AccountsServiceImpl implements IAccountsService {
                      (()->new ResourceNotFoundException("Customer","CustomerId",customerId.toString()));
 
              CustomerMapper.mapToCustomer(customerDto,customer);
+            // customer.setUpdatedAt(LocalDateTime.now());
              customerRepository.save(customer);
 
              isUpdated=true;
