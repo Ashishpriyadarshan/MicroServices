@@ -15,14 +15,12 @@ import lombok.Data;
 public class ResponseDto {
 
     @Schema(
-            description = "Status code in the Response",
-            example = "200"
+            description = "Status code in the Response"
     )
     private String statusCode;
 
     @Schema(
-            description = "Status message in the Response",
-            example = "Request Processed Successfully"
+            description = "Status message in the Response"
     )
     private String statusMsg;
 }

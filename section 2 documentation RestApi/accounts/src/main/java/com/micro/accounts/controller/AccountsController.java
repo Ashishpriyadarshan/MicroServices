@@ -125,7 +125,11 @@ public class AccountsController {
                                                     //Now it will get scanned and can be seen in the swagger-ui
                                             )
 
-                                    )
+                                    ),
+                            @ApiResponse(
+                                    responseCode = "417",
+                                    description = "Expectation Failed"
+                            )
                     }
             )
     @PutMapping("/update")
@@ -140,7 +144,7 @@ public class AccountsController {
         else
         {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                    .body(new ResponseDto(AccountsConstants.STATUS_500,AccountsConstants.MESSAGE_500));
+                    .body(new ResponseDto(AccountsConstants.STATUS_417,AccountsConstants.MESSAGE_417_UPDATE));
         }
     }
 
@@ -165,6 +169,11 @@ public class AccountsController {
                                     (
                                             responseCode = "500",
                                             description = "HTTP Status Internal Server Error"
+                                    ),
+                            @ApiResponse
+                                    (
+                                            responseCode = "417",
+                                            description = "Expectation Failed"
                                     )
                     }
             )
@@ -183,7 +192,7 @@ public class AccountsController {
         else
         {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                    .body(new ResponseDto(AccountsConstants.STATUS_500,AccountsConstants.MESSAGE_500));
+                    .body(new ResponseDto(AccountsConstants.STATUS_417,AccountsConstants.MESSAGE_417_DELETE));
         }
     }
 }
