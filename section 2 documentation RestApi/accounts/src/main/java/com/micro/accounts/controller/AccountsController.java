@@ -2,11 +2,14 @@ package com.micro.accounts.controller;
 
 import com.micro.accounts.constants.AccountsConstants;
 import com.micro.accounts.dto.CustomerDto;
+import com.micro.accounts.dto.ErrorResposneDto;
 import com.micro.accounts.dto.ResponseDto;
 import com.micro.accounts.entity.Accounts;
 import com.micro.accounts.service.IAccountsService;
 import com.micro.accounts.service.impl.AccountsServiceImpl;
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -114,7 +117,14 @@ public class AccountsController {
                             @ApiResponse
                                     (
                                             responseCode = "500",
-                                            description = "HTTP Status Internal Server Error"
+                                            description = "HTTP Status Internal Server Error",
+                                            content = @Content(
+                                                    schema = @Schema(implementation = ErrorResposneDto.class)
+                                                    //we included the schema here because ErrorResponseDto only gets invoked when an exception is thrown so
+                                                    //by default it is not scanned by OpenAPI just like other controller DTO's
+                                                    //Now it will get scanned and can be seen in the swagger-ui
+                                            )
+
                                     )
                     }
             )
