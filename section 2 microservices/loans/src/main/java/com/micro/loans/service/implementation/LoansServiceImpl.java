@@ -4,6 +4,7 @@ import com.micro.loans.constants.LoansConstants;
 import com.micro.loans.dto.LoansDto;
 import com.micro.loans.dto.ResponseDto;
 import com.micro.loans.entity.Loans;
+import com.micro.loans.exception.LoanAlreadyExistsException;
 import com.micro.loans.repository.LoansRepository;
 import com.micro.loans.service.ILoansService;
 import lombok.AllArgsConstructor;
@@ -24,12 +25,34 @@ public class LoansServiceImpl implements ILoansService {
 
     /**
      * The below function will be implemented to create a Loan entry in the DB
+     * first it will run a JPA Query to check if a loan entry already exists or not in the DB if present then it will throw a
+     * Runtime Exception otherwise it will proceed.
      *
      * @return
      */
     @Override
-    public boolean createLoan(String mobileNumber) {
+    public boolean createLoan(String mobileNumber)
 
+    {
+
+        if(loansRepository.findByMobileNumber(mobileNumber).isPresent())
+        {
+            throw new LoanAlreadyExistsException("Loan already exists with Mobile Number : "+mobileNumber);
+        }
+
+
+
+        return loansRepository.save(createNewLoan(mobileNumber))!=null ? true : false;
+    }
+
+    /**
+     * The below function is private to the service class and cannot be accessed by anyone from outside
+     * and this function will only get invoked when the above function executes its return statement.
+     * @param mobileNumber
+     * @return
+     */
+    private Loans createNewLoan(String mobileNumber)
+    {
         Loans loans = new Loans();
         long randomLoanNumber = 100000000000L + new Random().nextInt(900000000);
         loans.setLoanNumber(Long.toString(randomLoanNumber));
@@ -41,7 +64,7 @@ public class LoansServiceImpl implements ILoansService {
         loans.setCreatedAt(LocalDateTime.now());
         loans.setCreatedBy("Ashish");
 
-        return loansRepository.save(loans)!=null ? true : false;
+        return loans;
     }
 
     /**
