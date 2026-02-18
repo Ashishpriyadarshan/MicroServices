@@ -1,6 +1,7 @@
 package com.micro.loans.controller;
 
 import com.micro.loans.constants.LoansConstants;
+import com.micro.loans.dto.LoansDto;
 import com.micro.loans.dto.ResponseDto;
 import com.micro.loans.service.ILoansService;
 import lombok.AllArgsConstructor;
@@ -8,10 +9,7 @@ import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping(path = "/api" , produces = {MediaType.APPLICATION_JSON_VALUE})
@@ -35,5 +33,15 @@ public class LoansController {
 
         return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
                 .body(new ResponseDto(LoansConstants.STATUS_500,LoansConstants.MESSAGE_500));
+    }
+
+    @GetMapping("/fetch")
+    public ResponseEntity<LoansDto> fetchLoanDetails(String mobileNumber)
+    {
+
+        LoansDto loansDto = new LoansDto();
+        loansDto = iLoansService.fetchLoan(mobileNumber);
+
+        return ResponseEntity.status(HttpStatus.OK).body(loansDto);
     }
 }

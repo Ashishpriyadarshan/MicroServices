@@ -5,6 +5,8 @@ import com.micro.loans.dto.LoansDto;
 import com.micro.loans.dto.ResponseDto;
 import com.micro.loans.entity.Loans;
 import com.micro.loans.exception.LoanAlreadyExistsException;
+import com.micro.loans.exception.ResourceNotFoundException;
+import com.micro.loans.mapper.LoansMapper;
 import com.micro.loans.repository.LoansRepository;
 import com.micro.loans.service.ILoansService;
 import lombok.AllArgsConstructor;
@@ -13,6 +15,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.bind.annotation.PostMapping;
 
 import java.time.LocalDateTime;
+import java.util.Optional;
 import java.util.Random;
 
 @Service("LoansServiceImplV1")
@@ -75,7 +78,14 @@ public class LoansServiceImpl implements ILoansService {
      */
     @Override
     public LoansDto fetchLoan(String mobileNumber) {
-        return null;
+
+        Loans loans = loansRepository.findByMobileNumber(mobileNumber).orElseThrow(
+                () -> new ResourceNotFoundException("Loan","Mobile Number",mobileNumber));
+
+            LoansDto loansDto = new LoansDto();
+
+            loansDto= LoansMapper.loansToLoansDtoMapper(loans,loansDto);
+            return loansDto;
     }
 
     /**

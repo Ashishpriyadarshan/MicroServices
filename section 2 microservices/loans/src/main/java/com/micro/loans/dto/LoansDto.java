@@ -2,9 +2,10 @@ package com.micro.loans.dto;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 
-@Data@AllArgsConstructor
+@Data@AllArgsConstructor@NoArgsConstructor
 public class LoansDto {
 
 
@@ -17,12 +18,12 @@ public class LoansDto {
     private String loanType;
 
 
-    private Long totalLoan;
+    private int totalLoan;
 
 
-    private Long amountPaid;
+    private int amountPaid;
 
 
-    private Long outstandingAmount;
+    private int outstandingAmount;
 
 }
