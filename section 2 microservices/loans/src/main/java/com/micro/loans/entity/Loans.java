@@ -25,13 +25,13 @@ public class Loans extends BaseEntity {
     private String loanType;
 
     @Column(name = "total_loan")
-    private Long totalLoan;
+    private int totalLoan;
 
     @Column(name = "amount_paid")
-    private Long amountPaid;
+    private int amountPaid;
 
 
     @Column(name="outstanding_amount")
-    private Long outstandingAmount;
+    private int outstandingAmount;
 
 }

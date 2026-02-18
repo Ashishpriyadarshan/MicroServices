@@ -7,7 +7,7 @@ import lombok.*;
 import java.time.LocalDateTime;
 
 
-@Getter@Setter@NoArgsConstructor@AllArgsConstructor@ToString
+@Getter@Setter@ToString
 @MappedSuperclass
 public class BaseEntity {
 
