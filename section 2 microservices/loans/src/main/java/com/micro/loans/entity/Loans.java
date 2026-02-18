@@ -8,12 +8,12 @@ import lombok.Setter;
 
 @Entity
 @Getter@Setter@NoArgsConstructor@AllArgsConstructor
-public class loans extends baseEntity{
+public class Loans extends BaseEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     @Column(name = "loan_id")
-    private long loanId;
+    private Long loanId;
 
     @Column(name = "mobile_number")
     private String mobileNumber;
@@ -25,13 +25,13 @@ public class loans extends baseEntity{
     private String loanType;
 
     @Column(name = "total_loan")
-    private long totalLoan;
+    private Long totalLoan;
 
     @Column(name = "amount_paid")
-    private long amountPaid;
+    private Long amountPaid;
 
 
     @Column(name="outstanding_amount")
-    private long outstandingAmount;
+    private Long outstandingAmount;
 
 }
