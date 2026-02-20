@@ -22,8 +22,8 @@ public class LoansMapper {
         loans.setMobileNumber(loansDto.getMobileNumber());
         loans.setLoanType(loansDto.getLoanType());
         loans.setTotalLoan(loansDto.getTotalLoan());
-        loans.setAmountPaid(loans.getAmountPaid());
-        loans.setOutstandingAmount(loans.getOutstandingAmount());
+        loans.setAmountPaid(loansDto.getAmountPaid());
+        loans.setOutstandingAmount(loansDto.getOutstandingAmount());
         return loans;
 
     }

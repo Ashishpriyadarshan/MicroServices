@@ -91,12 +91,22 @@ public class LoansServiceImpl implements ILoansService {
     /**
      * The below function will be implemented to update the loan entry in the DB
      *
+     * @param loansDto
      * @return
      */
     @Override
-    public boolean updateLoan() {
-        return false;
+    public boolean updateLoanDetails(LoansDto loansDto) {
+        //first check if a loan already exists or Not in the Loan DB:
+        Loans loans = loansRepository.findByMobileNumber(loansDto.getMobileNumber()).orElseThrow
+                (()->new ResourceNotFoundException("Loan","Mobile Number",loansDto.getMobileNumber()));
+
+        //map from LoansDto to Loans first
+
+        loans = LoansMapper.loansDtoToLoansMapper(loansDto,loans);
+        loansRepository.save(loans);
+        return true;
     }
+
 
     /**
      * The below function will be implemented to delete a loan entry in the DB
