@@ -120,7 +120,7 @@ public class LoansServiceImpl implements ILoansService {
                 ()-> new ResourceNotFoundException("Loan","Mobile Number",mobileNumber));
 
         //The below line will be executed if there exists a loan record in the DB and no exception has occured:
-        loansRepository.delete(loans);
+        loansRepository.deleteById(loans.getLoanId());
         return true;
 
     }
