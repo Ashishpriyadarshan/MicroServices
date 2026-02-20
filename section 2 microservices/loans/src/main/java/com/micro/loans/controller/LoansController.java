@@ -59,4 +59,17 @@ public class LoansController {
         return ResponseEntity.status(HttpStatus.EXPECTATION_FAILED)
                 .body(new ResponseDto(LoansConstants.STATUS_417,LoansConstants.MESSAGE_417_UPDATE));
     }
+
+    @DeleteMapping("/delete")
+    public ResponseEntity<ResponseDto> deleteLoanDetails(@RequestParam String mobileNumber)
+    {
+        if(iLoansService.deleteLoan(mobileNumber))
+        {
+            return ResponseEntity.status(HttpStatus.OK)
+                    .body(new ResponseDto(LoansConstants.STATUS_200,LoansConstants.MESSAGE_200));
+        }
+
+        return ResponseEntity.status(HttpStatus.EXPECTATION_FAILED)
+                .body( new ResponseDto( LoansConstants.STATUS_417,LoansConstants.MESSAGE_417_DELETE));
+    }
 }

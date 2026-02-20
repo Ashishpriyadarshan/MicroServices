@@ -114,7 +114,14 @@ public class LoansServiceImpl implements ILoansService {
      * @return
      */
     @Override
-    public boolean deleteLoan() {
-        return false;
+    public boolean deleteLoan(String mobileNumber) {
+
+        Loans loans = loansRepository.findByMobileNumber(mobileNumber).orElseThrow(
+                ()-> new ResourceNotFoundException("Loan","Mobile Number",mobileNumber));
+
+        //The below line will be executed if there exists a loan record in the DB and no exception has occured:
+        loansRepository.delete(loans);
+        return true;
+
     }
 }

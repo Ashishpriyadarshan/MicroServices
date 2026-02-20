@@ -28,5 +28,5 @@ public interface ILoansService {
      * The below function will be implemented to delete a loan entry in the DB
      * @return
      */
-    boolean deleteLoan();
+    boolean deleteLoan(String mobileNumber);
 }
