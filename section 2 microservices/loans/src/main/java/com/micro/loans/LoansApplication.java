@@ -12,7 +12,27 @@ import org.springframework.data.jpa.repository.config.EnableJpaAuditing;
 
 @SpringBootApplication
 @EnableJpaAuditing(auditorAwareRef = "auditAwareImpl")
+@OpenAPIDefinition(
+        info = @Info(
+                title = "Loans Microservice",
+                description = "This microservice contains all the CRUD operations for the Loans",
+                version = "1.0",
+                contact = @Contact(
+                        name = "Ashish Priyadarshan",
+                        email = "ashish@xyz.com",
+                        url = "https://github.com/Ashishpriyadarshan"
+                ),
+                license = @License(
+                        name = "Apache 2.0",
+                        url="https://github.com/Ashishpriyadarshan"
+                )
+        ),
+        externalDocs = @ExternalDocumentation(
+                description = "Loans microservice REST API's Documentation",
+                url = "https://github.com/Ashishpriyadarshan"
+        )
 
+)
 public class LoansApplication {
 
 	public static void main(String[] args) {
