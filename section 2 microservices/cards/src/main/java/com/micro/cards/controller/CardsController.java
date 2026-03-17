@@ -1,25 +1,33 @@
 package com.micro.cards.controller;
 
+import com.micro.cards.constants.CardsConstant;
+import com.micro.cards.dto.ResponseDto;
+import com.micro.cards.service.ICardsService;
+import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.HttpStatusCode;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping(path = "/api",produces = {MediaType.APPLICATION_JSON_VALUE})
+@RequiredArgsConstructor
 public class CardsController {
 
-    @GetMapping("/check")
-    public ResponseEntity<String> check()
-    {
-        return ResponseEntity.status(200).body("Working Fine");
-    }
+    @Qualifier("CardsServiceImplV1")
+    private final ICardsService iCardsService;
 
-    @GetMapping("/check1")
-    public ResponseEntity<String> check1()
+
+    @PostMapping("/create")
+    public ResponseEntity<ResponseDto> createCard(@RequestParam
+                                                  String mobileNumber)
     {
-        return new ResponseEntity<>("Working fine", HttpStatusCode.valueOf(200));
+        iCardsService.createCard(mobileNumber);
+
+        return ResponseEntity.
+                status(HttpStatus.CREATED)
+                .body(new ResponseDto(CardsConstant.STATUS_201,CardsConstant.MESSAGE_201));
     }
 }
