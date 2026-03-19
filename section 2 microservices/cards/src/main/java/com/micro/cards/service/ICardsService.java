@@ -12,4 +12,6 @@ public interface ICardsService {
     void createCard(String mobileNumber);
 
     CardsDto fetchCardDetails(String mobileNumber);
+
+    boolean updateCardDetails(CardsDto cardsDto);
 }

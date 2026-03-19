@@ -79,4 +79,27 @@ public class CardsServiceImpl implements ICardsService {
 
     }
 
+    @Override
+    public boolean updateCardDetails(CardsDto cardsDto)
+    {
+        //once we recieve the CardsDto now we need to use the mapper function:
+        Cards cards = new Cards();
+        //check if card is present or not with the given mobileNumber:
+           Optional<Cards> cards1 = cardsRepository.findByMobileNumber(cardsDto.getMobileNumber());
+
+           if(cards1.isEmpty())
+           {
+               throw new ResourceNotFoundException("Card","Card Number",cardsDto.getCardNumber());
+           }
+           //The below line executes only when there is no exception:
+           cards = CardsMapper.mapCardsDtoToCards(cardsDto);
+           cards.setCreatedAt(LocalDateTime.now());
+           cards.setCreatedBy("Updater");
+           cards.setCardId(cards1.get().getCardId());
+           cardsRepository.save(cards);
+           return true;
+
+    }
+
+
 }

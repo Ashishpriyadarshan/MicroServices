@@ -33,6 +33,7 @@ public class CardsController {
                 .body(new ResponseDto(CardsConstant.STATUS_201,CardsConstant.MESSAGE_201));
     }
 
+
     @GetMapping("/fetch")
     public ResponseEntity<CardsDto> fetchCard(@RequestParam String mobileNumber)
     {
@@ -42,6 +43,20 @@ public class CardsController {
         return ResponseEntity.
                 status(HttpStatus.OK).
                 body(cardsDto);
+    }
+
+    @PutMapping("/update")
+    public ResponseEntity<ResponseDto> updateCardDetails(@RequestBody CardsDto cardsDto)
+    {
+        if(iCardsService.updateCardDetails(cardsDto))
+        {
+            return ResponseEntity.status(HttpStatus.OK).
+                    body(new ResponseDto
+                            (CardsConstant.STATUS_200,CardsConstant.MESSAGE_200));
+        }
+
+        return ResponseEntity.status(HttpStatus.EXPECTATION_FAILED)
+                .body(new ResponseDto(CardsConstant.STATUS_417,CardsConstant.MESSAGE_417_UPDATE));
     }
 
 }
