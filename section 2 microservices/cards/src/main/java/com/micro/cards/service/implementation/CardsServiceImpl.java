@@ -94,5 +94,21 @@ public class CardsServiceImpl implements ICardsService {
 
     }
 
+    /**
+     *
+     * @param mobileNumber
+     * @return boolean type it will tell whether the Card with the given mobile Number was removed from the DB or not
+     */
+    @Override
+    public boolean deleteCardDetails(String mobileNumber) {
+
+        //first check if there exists a entry in the DB or not with the given mobile Number:
+        Cards cards = cardsRepository.findByMobileNumber(mobileNumber)
+                .orElseThrow(()-> new ResourceNotFoundException("Card","Mobile Number",mobileNumber));
+
+        cardsRepository.deleteById(cards.getCardId());
+        return true;
+    }
+
 
 }

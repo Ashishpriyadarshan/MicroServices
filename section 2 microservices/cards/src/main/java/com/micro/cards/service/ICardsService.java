@@ -13,5 +13,17 @@ public interface ICardsService {
 
     CardsDto fetchCardDetails(String mobileNumber);
 
+    /**
+     *
+     * @param cardsDto
+     * @return The end user will send the Card details in the form of the CardsDto and finally upon updating a bool value will be returned
+     */
     boolean updateCardDetails(CardsDto cardsDto);
+
+    /**
+     *
+     * @param mobileNumber
+     * @return boolean type it will tell whether the Card with the given mobile Number was removed from the DB or not
+     */
+    boolean deleteCardDetails(String mobileNumber);
 }
