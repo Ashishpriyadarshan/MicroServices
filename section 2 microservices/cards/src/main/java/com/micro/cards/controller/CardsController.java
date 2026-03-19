@@ -3,6 +3,7 @@ package com.micro.cards.controller;
 import com.micro.cards.constants.CardsConstant;
 import com.micro.cards.dto.CardsDto;
 import com.micro.cards.dto.ResponseDto;
+import com.micro.cards.entity.Cards;
 import com.micro.cards.service.ICardsService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -57,6 +58,21 @@ public class CardsController {
 
         return ResponseEntity.status(HttpStatus.EXPECTATION_FAILED)
                 .body(new ResponseDto(CardsConstant.STATUS_417,CardsConstant.MESSAGE_417_UPDATE));
+    }
+
+    @DeleteMapping("/delete")
+    public ResponseEntity<ResponseDto> deleteCardDetails(@RequestParam String mobileNumber)
+    {
+        boolean isDeleted = iCardsService.deleteCardDetails(mobileNumber);
+
+        if(isDeleted)
+        {
+            return ResponseEntity.status(HttpStatus.OK)
+                    .body(new ResponseDto(CardsConstant.STATUS_200,CardsConstant.MESSAGE_200));
+        }
+
+        return ResponseEntity.status(HttpStatus.EXPECTATION_FAILED)
+                .body(new ResponseDto(CardsConstant.STATUS_417, CardsConstant.MESSAGE_417_DELETE));
     }
 
 }
