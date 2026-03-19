@@ -93,8 +93,6 @@ public class CardsServiceImpl implements ICardsService {
            }
            //The below line executes only when there is no exception:
            cards = CardsMapper.mapCardsDtoToCards(cardsDto);
-           cards.setCreatedAt(LocalDateTime.now());
-           cards.setCreatedBy("Updater");
            cards.setCardId(cards1.get().getCardId());
            cardsRepository.save(cards);
            return true;
