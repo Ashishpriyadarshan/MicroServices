@@ -1,6 +1,7 @@
 package com.micro.cards.controller;
 
 import com.micro.cards.constants.CardsConstant;
+import com.micro.cards.dto.CardsDto;
 import com.micro.cards.dto.ResponseDto;
 import com.micro.cards.service.ICardsService;
 import lombok.RequiredArgsConstructor;
@@ -20,6 +21,7 @@ public class CardsController {
     private final ICardsService iCardsService;
 
 
+
     @PostMapping("/create")
     public ResponseEntity<ResponseDto> createCard(@RequestParam
                                                   String mobileNumber)
@@ -30,4 +32,16 @@ public class CardsController {
                 status(HttpStatus.CREATED)
                 .body(new ResponseDto(CardsConstant.STATUS_201,CardsConstant.MESSAGE_201));
     }
+
+    @GetMapping("/fetch")
+    public ResponseEntity<CardsDto> fetchCard(@RequestParam String mobileNumber)
+    {
+
+        CardsDto cardsDto =  iCardsService.fetchCardDetails(mobileNumber);
+
+        return ResponseEntity.
+                status(HttpStatus.OK).
+                body(cardsDto);
+    }
+
 }

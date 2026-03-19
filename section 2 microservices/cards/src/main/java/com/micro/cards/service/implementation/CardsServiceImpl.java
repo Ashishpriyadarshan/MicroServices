@@ -1,13 +1,17 @@
 package com.micro.cards.service.implementation;
 
 import com.micro.cards.constants.CardsConstant;
+import com.micro.cards.dto.CardsDto;
 import com.micro.cards.entity.Cards;
 import com.micro.cards.exceptions.CardAlreadyExistsException;
+import com.micro.cards.exceptions.ResourceNotFoundException;
+import com.micro.cards.mapper.CardsMapper;
 import com.micro.cards.repository.CardsRepository;
 import com.micro.cards.service.ICardsService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import javax.smartcardio.CardNotPresentException;
 import java.time.LocalDateTime;
 import java.util.Optional;
 import java.util.Random;
@@ -38,6 +42,8 @@ public class CardsServiceImpl implements ICardsService {
 
     }
 
+
+
     private Cards createNewCard(String mobileNumber)
     {
         Cards newCard = new Cards();
@@ -55,4 +61,22 @@ public class CardsServiceImpl implements ICardsService {
 
         return newCard;
     }
+
+
+    @Override
+    public CardsDto fetchCardDetails(String mobileNumber)
+    {
+        //first check if there is any entry with the specific mobileNumber:
+        Cards cards = cardsRepository.findByMobileNumber(mobileNumber).
+                orElseThrow(()-> new ResourceNotFoundException("Card","MobileNumber",mobileNumber));
+
+        //Now this line will execute only when the above one throws no exception:
+        //we have to use mapper here:
+        CardsDto cardsDto = new CardsDto();
+        cardsDto = CardsMapper.mapCardsToCardsDto(cards,cardsDto);
+
+        return cardsDto;
+
+    }
+
 }

@@ -1,5 +1,7 @@
 package com.micro.cards.service;
 
+import com.micro.cards.dto.CardsDto;
+
 public interface ICardsService {
 
     /**
@@ -8,4 +10,6 @@ public interface ICardsService {
      * @param mobileNumber
      */
     void createCard(String mobileNumber);
+
+    CardsDto fetchCardDetails(String mobileNumber);
 }
