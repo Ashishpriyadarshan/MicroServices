@@ -14,3 +14,9 @@ spring:
     hibernate:
       ddl-auto: update
     show-sql: true
+
+build:
+  version: "V 1.0"
+
+app:
+  name: "accounts-microservice"

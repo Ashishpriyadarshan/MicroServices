@@ -17,7 +17,10 @@ import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.Pattern;
 import lombok.AllArgsConstructor;
+import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.RequestEntity;
@@ -29,7 +32,7 @@ import java.lang.annotation.Repeatable;
 
 @RestController
 @RequestMapping(path = "/api",produces = {MediaType.APPLICATION_JSON_VALUE})
-@AllArgsConstructor
+@RequiredArgsConstructor
 @Validated
 @Tag(
         name="CRUD REST API's for Accounts microservice",
@@ -42,8 +45,14 @@ public class AccountsController {
 
 
     @Qualifier("accountsServiceImplV1")
-    private IAccountsService accountsServiceImpl;
+    private final IAccountsService accountsServiceImpl;
 
+
+    @Value("${build.version}")
+    private String buildVersion;
+
+    @Value("${app.name}")
+    private String appName;
 
 
     @Operation(
@@ -195,4 +204,65 @@ public class AccountsController {
                     .body(new ResponseDto(AccountsConstants.STATUS_417,AccountsConstants.MESSAGE_417_DELETE));
         }
     }
+
+
+
+    @Operation(
+            summary = "get-build-version  REST API",
+            description = "This REST API is responsible to return the build version  which the controller gets from the config file using @Value annotation "
+    )
+    @ApiResponses
+            (
+                    {
+                            @ApiResponse
+                                    (
+                                            responseCode = "200",
+                                            description = "HTTP Status OK"
+                                    ),
+                            @ApiResponse
+                                    (
+                                            responseCode = "500",
+                                            description = "HTTP Status Internal Server Error",
+                                            content = @Content(
+                                                    schema = @Schema(implementation = ErrorResposneDto.class)
+                                            )
+                                    )
+                    }
+            )
+    @GetMapping("/get-build-version")
+     public ResponseEntity<String> appBuildVersion()
+     {
+         return ResponseEntity.status(HttpStatus.OK).body(buildVersion);
+     }
+
+
+
+    @Operation(
+            summary = "get-app-name  REST API",
+            description = "This REST API is responsible to return the app name which the controller gets from the config file using @Value annotation "
+    )
+    @ApiResponses
+            (
+                    {
+                            @ApiResponse
+                                    (
+                                            responseCode = "200",
+                                            description = "HTTP Status OK"
+                                    ),
+                            @ApiResponse
+                                    (
+                                            responseCode = "500",
+                                            description = "HTTP Status Internal Server Error",
+                                            content = @Content(
+                                                    schema = @Schema(implementation = ErrorResposneDto.class)
+                                            )
+                                    )
+                    }
+            )
+     @GetMapping("/get-app-name")
+     public ResponseEntity<String> appNameInfo()
+     {
+         return new ResponseEntity<>(appName,HttpStatus.OK);
+     }
+
 }
