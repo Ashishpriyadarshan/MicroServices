@@ -21,6 +21,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.core.env.Environment;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.RequestEntity;
@@ -53,6 +54,11 @@ public class AccountsController {
 
     @Value("${app.name}")
     private String appName;
+
+
+    //Accessing Environmental Variables:
+    @Autowired
+    private Environment environment;
 
 
     @Operation(
@@ -264,5 +270,46 @@ public class AccountsController {
      {
          return new ResponseEntity<>(appName,HttpStatus.OK);
      }
+
+
+
+    @Operation(
+            summary = "get-java-version  REST API",
+            description = "This REST API is responsible to return the env variable details which the controller gets from the config file " +
+                    "using the object of Environment Interface provided by " +
+                    "the org.springframework.core.env.Environment"
+    )
+    @ApiResponses
+            (
+                    {
+                            @ApiResponse
+                                    (
+                                            responseCode = "200",
+                                            description = "HTTP Status OK"
+                                    ),
+                            @ApiResponse
+                                    (
+                                            responseCode = "500",
+                                            description = "HTTP Status Internal Server Error",
+                                            content = @Content(
+                                                    schema = @Schema(implementation = ErrorResposneDto.class)
+                                            )
+                                    )
+                    }
+            )
+    @GetMapping("/get-java-version")
+    public ResponseEntity<String> envVariableInfo()
+    {
+        return ResponseEntity.status(HttpStatus.OK)
+                .body(environment.getProperty("JAVA_HOME"));
+    }
+
+    @GetMapping("/get-mvn-version")
+    public ResponseEntity<String> envMVN()
+    {
+        return ResponseEntity.status(HttpStatus.OK)
+                .body(environment.getProperty("MAVEN_HOME"));
+    }
+
 
 }
