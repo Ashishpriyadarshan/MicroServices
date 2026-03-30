@@ -1,6 +1,7 @@
 package com.micro.accounts.controller;
 
 import com.micro.accounts.constants.AccountsConstants;
+import com.micro.accounts.dto.AccountsContactInfoDto;
 import com.micro.accounts.dto.CustomerDto;
 import com.micro.accounts.dto.ErrorResposneDto;
 import com.micro.accounts.dto.ResponseDto;
@@ -21,6 +22,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.boot.micrometer.observation.autoconfigure.ObservationProperties;
 import org.springframework.core.env.Environment;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -59,6 +61,9 @@ public class AccountsController {
     //Accessing Environmental Variables:
     @Autowired
     private Environment environment;
+
+    @Autowired
+    private AccountsContactInfoDto accountsContactInfoDto;
 
 
     @Operation(
@@ -304,6 +309,31 @@ public class AccountsController {
                 .body(environment.getProperty("JAVA_HOME"));
     }
 
+
+    @Operation(
+            summary = "get-mvn-version  REST API",
+            description = "This REST API is responsible to return the env variable details which the controller gets from the config file " +
+                    "using the object of Environment Interface provided by " +
+                    "the org.springframework.core.env.Environment"
+    )
+    @ApiResponses
+            (
+                    {
+                            @ApiResponse
+                                    (
+                                            responseCode = "200",
+                                            description = "HTTP Status OK"
+                                    ),
+                            @ApiResponse
+                                    (
+                                            responseCode = "500",
+                                            description = "HTTP Status Internal Server Error",
+                                            content = @Content(
+                                                    schema = @Schema(implementation = ErrorResposneDto.class)
+                                            )
+                                    )
+                    }
+            )
     @GetMapping("/get-mvn-version")
     public ResponseEntity<String> envMVN()
     {
@@ -311,5 +341,38 @@ public class AccountsController {
                 .body(environment.getProperty("MAVEN_HOME"));
     }
 
+
+    @Operation(
+            summary = "get-contact-info  REST API",
+            description = "This REST API is responsible to return the details which the controller gets from " +
+                    "POJO of the class having the ConfigurationProperties annotations" +
+                    " The values as created in the application.properties yml file under the prefix name accounts"+
+                    " and class created witht the ConfigurationProperties takes the prefix value as accounts thats how it maps the values to " +
+                    "the object of the class AccountsContactInfoDto"
+    )
+    @ApiResponses
+            (
+                    {
+                            @ApiResponse
+                                    (
+                                            responseCode = "200",
+                                            description = "HTTP Status OK"
+                                    ),
+                            @ApiResponse
+                                    (
+                                            responseCode = "500",
+                                            description = "HTTP Status Internal Server Error",
+                                            content = @Content(
+                                                    schema = @Schema(implementation = ErrorResposneDto.class)
+                                            )
+                                    )
+                    }
+            )
+    @GetMapping("/get-contact-info")
+    public ResponseEntity<AccountsContactInfoDto> getContactInfo()
+    {
+        return ResponseEntity.status(HttpStatus.OK)
+                .body(accountsContactInfoDto);
+    }
 
 }

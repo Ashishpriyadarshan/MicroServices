@@ -20,3 +20,13 @@ build:
 
 app:
   name: "accounts-microservice"
+
+
+accounts:
+  message: "Welcome to Accounts related local Api's"
+  contactDetails:
+    name: "Ashish"
+    email: "ashish1234@gmail.com"
+  onCallSupport:
+    - (91) 1234567890
+    - (91) 1234567899
