@@ -14,19 +14,26 @@ spring:
     hibernate:
       ddl-auto: update
     show-sql: true
+  config:
+    import:
+      - "application_prod.yml"
+      - "application_qa.yml"
+      - "application_stage.yml"
+  profiles:
+    active:
+      - "prod"
+
 
 build:
   version: "V 1.0"
-
 app:
   name: "accounts-microservice"
 
-
 accounts:
-  message: "Welcome to Accounts related local Api's"
+  message: "Welcome to Accounts related local(Dev) Api's"
   contactDetails:
     name: "Ashish"
-    email: "ashish1234@gmail.com"
+    email: "ashish1234@bcards.com"
   onCallSupport:
-    - (91) 1234567890
-    - (91) 1234567899
+    - "+91-1234567890"
+    - "+91-1234567899"

@@ -2,6 +2,7 @@ package com.micro.loans.controller;
 
 import com.micro.loans.constants.LoansConstants;
 import com.micro.loans.dto.ErrorResponseDto;
+import com.micro.loans.dto.LoansContactInfo;
 import com.micro.loans.dto.LoansDto;
 import com.micro.loans.dto.ResponseDto;
 import com.micro.loans.service.ILoansService;
@@ -14,8 +15,12 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.Pattern;
 import lombok.AllArgsConstructor;
+import lombok.RequiredArgsConstructor;
 import org.hibernate.sql.Update;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.core.env.Environment;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -24,7 +29,7 @@ import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping(path = "/api" , produces = {MediaType.APPLICATION_JSON_VALUE})
-@AllArgsConstructor
+@RequiredArgsConstructor
 @Validated
 @Tag(name = "CRUD RestApi's for Loans Microservices",
         description ="CRUD RestApi's for performing Create/Fetch/Update/Delete the Loan details"
@@ -36,6 +41,20 @@ public class LoansController {
 
     @Qualifier(value = "LoansServiceImplV1")
     private final ILoansService iLoansService;
+
+    @Value("${app.name}")
+    private String appName;
+
+    @Value("${build.version}")
+    private String buildVersion;
+
+    @Autowired
+    private Environment environment;
+
+    @Autowired
+    private LoansContactInfo loansContactInfo;
+
+
 
     @PostMapping("/create")
     @Operation(
@@ -172,4 +191,166 @@ public class LoansController {
         return ResponseEntity.status(HttpStatus.EXPECTATION_FAILED)
                 .body( new ResponseDto( LoansConstants.STATUS_417,LoansConstants.MESSAGE_417_DELETE));
     }
+
+
+
+
+    //----------------------------------------------------------------------------------------------------------------------------------
+    @Operation(
+            summary = "get-build-version  REST API",
+            description = "This REST API is responsible to return the build version  which the controller gets from the config file using @Value annotation "
+    )
+    @ApiResponses
+            (
+                    {
+                            @ApiResponse
+                                    (
+                                            responseCode = "200",
+                                            description = "HTTP Status OK"
+                                    ),
+                            @ApiResponse
+                                    (
+                                            responseCode = "500",
+                                            description = "HTTP Status Internal Server Error",
+                                            content = @Content(
+                                                    schema = @Schema(implementation = ErrorResponseDto.class)
+                                            )
+                                    )
+                    }
+            )
+    @GetMapping("/get-build-version")
+    public ResponseEntity<String> appBuildVersion()
+    {
+        return ResponseEntity.status(HttpStatus.OK).body(buildVersion);
+    }
+
+
+
+    @Operation(
+            summary = "get-app-name  REST API",
+            description = "This REST API is responsible to return the app name which the controller gets from the config file using @Value annotation "
+    )
+    @ApiResponses
+            (
+                    {
+                            @ApiResponse
+                                    (
+                                            responseCode = "200",
+                                            description = "HTTP Status OK"
+                                    ),
+                            @ApiResponse
+                                    (
+                                            responseCode = "500",
+                                            description = "HTTP Status Internal Server Error",
+                                            content = @Content(
+                                                    schema = @Schema(implementation = ErrorResponseDto.class)
+                                            )
+                                    )
+                    }
+            )
+    @GetMapping("/get-app-name")
+    public ResponseEntity<String> appNameInfo()
+    {
+        return new ResponseEntity<>(appName,HttpStatus.OK);
+    }
+
+
+
+    @Operation(
+            summary = "get-java-version  REST API",
+            description = "This REST API is responsible to return the env variable details which the controller gets from the config file " +
+                    "using the object of Environment Interface provided by " +
+                    "the org.springframework.core.env.Environment"
+    )
+    @ApiResponses
+            (
+                    {
+                            @ApiResponse
+                                    (
+                                            responseCode = "200",
+                                            description = "HTTP Status OK"
+                                    ),
+                            @ApiResponse
+                                    (
+                                            responseCode = "500",
+                                            description = "HTTP Status Internal Server Error",
+                                            content = @Content(
+                                                    schema = @Schema(implementation = ErrorResponseDto.class)
+                                            )
+                                    )
+                    }
+            )
+    @GetMapping("/get-java-version")
+    public ResponseEntity<String> envVariableInfo()
+    {
+        return ResponseEntity.status(HttpStatus.OK)
+                .body(environment.getProperty("JAVA_HOME"));
+    }
+
+
+    @Operation(
+            summary = "get-mvn-version  REST API",
+            description = "This REST API is responsible to return the env variable details which the controller gets from the config file " +
+                    "using the object of Environment Interface provided by " +
+                    "the org.springframework.core.env.Environment"
+    )
+    @ApiResponses
+            (
+                    {
+                            @ApiResponse
+                                    (
+                                            responseCode = "200",
+                                            description = "HTTP Status OK"
+                                    ),
+                            @ApiResponse
+                                    (
+                                            responseCode = "500",
+                                            description = "HTTP Status Internal Server Error",
+                                            content = @Content(
+                                                    schema = @Schema(implementation = ErrorResponseDto.class)
+                                            )
+                                    )
+                    }
+            )
+    @GetMapping("/get-mvn-version")
+    public ResponseEntity<String> envMVN()
+    {
+        return ResponseEntity.status(HttpStatus.OK)
+                .body(environment.getProperty("MAVEN_HOME"));
+    }
+
+
+    @Operation(
+            summary = "get-contact-info  REST API",
+            description = "This REST API is responsible to return the details which the controller gets from " +
+                    "POJO of the class having the ConfigurationProperties annotations" +
+                    " The values as created in the application.properties yml file under the prefix name loans"+
+                    " and class created with the ConfigurationProperties takes the prefix value as loans thats how it maps the values to " +
+                    "the object of the class LoansContactInfo"
+    )
+    @ApiResponses
+            (
+                    {
+                            @ApiResponse
+                                    (
+                                            responseCode = "200",
+                                            description = "HTTP Status OK"
+                                    ),
+                            @ApiResponse
+                                    (
+                                            responseCode = "500",
+                                            description = "HTTP Status Internal Server Error",
+                                            content = @Content(
+                                                    schema = @Schema(implementation = ErrorResponseDto.class)
+                                            )
+                                    )
+                    }
+            )
+    @GetMapping("/get-contact-info")
+    public ResponseEntity<LoansContactInfo> getContactInfo()
+    {
+        return ResponseEntity.status(HttpStatus.OK)
+                .body(loansContactInfo);
+    }
+
 }
