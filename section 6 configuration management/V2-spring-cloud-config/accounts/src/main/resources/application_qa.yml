@@ -1,0 +1,18 @@
+
+#The below line tells the value with which this profile will get activated
+spring:
+  config:
+    activate:
+      on-profile: "qa"
+
+build:
+  version: "V 2.0 QA env"
+
+accounts:
+  message: "Welcome to Accounts related QA env Api's"
+  contactDetails:
+    name: "Aditya Mitra - QA Lead"
+    email: "adityaM1234@bcards.com"
+  onCallSupport:
+    - "+91-1234567891"
+    - "+91-1234567892"

@@ -1,0 +1,11 @@
+build:
+  version: "2.0"
+
+loans:
+  message: "Welcome to loans related QA ENV APIs "
+  contactDetails:
+    name: "Yasasvi Jaiswal - QA Lead"
+    email: "jaiswalpanipuri@bcards.com"
+  onCallSupport:
+    - "+91-6574839201"
+    - "+91-6574839200"

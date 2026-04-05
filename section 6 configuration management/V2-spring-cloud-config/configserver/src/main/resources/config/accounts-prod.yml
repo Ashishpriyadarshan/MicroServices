@@ -1,0 +1,12 @@
+
+build:
+  version: "V 3.0 PROD env"
+
+accounts:
+  message: "Welcome to Accounts related PROD env Api's"
+  contactDetails:
+    name: "Avigyan Mohanty - PROD Lead"
+    email: "avigyanMohanty1234@bcards.com"
+  onCallSupport:
+    - "+91-1234567893"
+    - "+91-1234567894"

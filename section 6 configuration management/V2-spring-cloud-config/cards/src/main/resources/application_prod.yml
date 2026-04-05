@@ -1,0 +1,16 @@
+spring:
+  config:
+    activate:
+      on-profile: "prod"
+
+build:
+  version: "1.0"
+
+cards:
+  message: "Welcome to cards related prod ENV APIs "
+  contactDetails:
+    name: "Virat Kohli - Product Owner"
+    email: "viratone8@bcards.com"
+  onCallSupport:
+    - "+91-1234598760"
+    - "+91-1234598766"

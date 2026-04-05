@@ -1,0 +1,13 @@
+build:
+  version: "3.0"
+app:
+  name: "Loans microservice"
+
+loans:
+  message: "Welcome to loans related local(dev) APIs "
+  contactDetails:
+    name: "Surya Kumar Yadav - Developer"
+    email: "skychewingum@bcards.com"
+  onCallSupport:
+    - "+91-1239876543"
+    - "+91-1239876540"
