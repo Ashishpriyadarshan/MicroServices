@@ -1,6 +1,11 @@
 server:
   port: 8080
 spring:
+  application:
+    name: "accounts"
+  profiles:
+    active: "qa"
+    ##Even if you dont mention active profile still it is ok , it will load the default accounts.yml from the config server.
   datasource:
     url: jdbc:h2:mem:testdb
     driver-class-name: org.h2.Driver
@@ -15,25 +20,5 @@ spring:
       ddl-auto: update
     show-sql: true
   config:
-    import:
-      - "application_prod.yml"
-      - "application_qa.yml"
-      - "application_stage.yml"
-#  profiles:
-#    active:
-#      - "prod"
+    import: "optional:configserver:http://localhost:8071/"
 
-
-build:
-  version: "V 1.0"
-app:
-  name: "accounts-microservice"
-
-accounts:
-  message: "Welcome to Accounts related local(Dev) Api's"
-  contactDetails:
-    name: "Ashish"
-    email: "ashish1234@bcards.com"
-  onCallSupport:
-    - "+91-1234567890"
-    - "+91-1234567899"
