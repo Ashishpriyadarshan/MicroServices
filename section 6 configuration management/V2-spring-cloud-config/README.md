@@ -159,13 +159,25 @@ There are multiple ways to manage configuration in Spring-based applications:
 - ![img_31.png](images/img_31.png) we got this configs comming in the postman , this is the default accounts.yml which had given to the config server so this one is getting loaded. we have also removed the CLI from the edit configs before running also .
 - So even if you dont give the default profile inside your apps application.yml still it will load the config with the name same as your app name.
 - ![img_14.png](images/img_14.png) as you can see.
-- 
+- *** one bonus tip is in Real world industry level applications we dont hardcode the URL also rather we set it during run time using env variables or CLI arguments.
+- ![img_32.png](images/img_32.png)
+- As can be seen you keep it like this during run time give the details.
 ---
 
 ### 2️⃣ File System
 - Config files stored outside the application (local or server path)
 - Application reads config from external file location
 - More flexible than classpath
+- lets start with examples:
+- first copy the configs to any folder inside your local system .
+- ![img_33.png](images/img_33.png) suppose i have copied all the configs to this folder now do one thing , delete the configs inside you configserver application
+- ![img_34.png](images/img_34.png) remove this config folder entirely.
+- Now we need to make some changes inside the application.yml of the configserver.
+- ![img_35.png](images/img_35.png) see how the serach location looks now first use file then use 3 slashes /// then the location on your pc and instead of one slash use 2 slashes that's it .
+- Now lets check whether the config server is able to fetch the details or not by simply hitting the ulr of the configserver only:
+- ![img_36.png](images/img_36.png) see we are getting the details now lets just randomly start our accounts app and check it's output in the postman.
+- ![img_37.png](images/img_37.png) so it's working fine .
+- So finally demonstrated the working of file sytem approach.
 
 ---
 
@@ -173,6 +185,24 @@ There are multiple ways to manage configuration in Spring-based applications:
 - Centralized config stored in Git (GitHub, GitLab, Bitbucket)
 - Used with Spring Cloud Config Server
 - Supports versioning, rollback, and team collaboration
+- Lets see how it's done:
+- first we have to make changes in the application.yml of configserver app:
+- ![img_38.png](images/img_38.png) Here we will have to set active as git and under that git section we will have to mention all the details of our 
+- github config files repo like i have mentioned and the password field that you are seeing is a env variable inside which i have set the PAT value of my own account , likely use your own username and PAT value but make sure the uri is linked to the correct repo
+- default lable main means it will take all the info from the main branch of the config files repo.
+- timeout 5 means at max our configserver app will take 5 secs to connect to the config files repo after that it will throw error.
+- clone-on-start:true means the config files repo will be cloned on our system the very first time it is called and it will be stored in temp folder.
+- force-pull is true means
+- Now lets start our microservices and check whether we are getting the configs or not:
+- Loans microservice where we had set the default active profile as prod:
+- ![img_39.png](images/img_39.png)
+- cards microservice:
+- ![img_40.png](images/img_40.png)
+- Finally it is working fine.
+- BTW i had to give username and password for the github repo because it is a private repo that's why.
+- If the config files repo is public then you dont need any username or password.
+- ![img_41.png](images/img_41.png) see how during the startup our configserver is connecting to the git repo although it is not showing it's url but as soon as you switch on any application which needs to connect to the config server to get its config it starts pulling all the configs of that application to it's temp.
+- 
 
 ---
 
