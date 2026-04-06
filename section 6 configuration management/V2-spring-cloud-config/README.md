@@ -202,13 +202,28 @@ There are multiple ways to manage configuration in Spring-based applications:
 - BTW i had to give username and password for the github repo because it is a private repo that's why.
 - If the config files repo is public then you dont need any username or password.
 - ![img_41.png](images/img_41.png) see how during the startup our configserver is connecting to the git repo although it is not showing it's url but as soon as you switch on any application which needs to connect to the config server to get its config it starts pulling all the configs of that application to it's temp.
-- 
+- ### How to encrypt the info kept inside the github:
+- you need to add a encryption key first to your configserver application.yml .
+- Open your gitbash in local and you can create one or you can create one online too.
+- ![img_42.png](images/img_42.png) so we have generated a key now copy this key and use it under encrypt.key in application.yml.
+- ![img_43.png](images/img_43.png) as can be seen we have used it here now when we run the configserver application it is going to expose some api's like encrypt and decrypt which we can use to encrypt whatever we want.
+- ![img_44.png](images/img_44.png) let us encrypt the name and email id field so let's first encrypt the name.
+- ![img_45.png](images/img_45.png) in your postman hit the api encrypt of configserver and then pass the name as text in body .
+- ![img_46.png](images/img_46.png) so here we got a encrypted text now copy this text into the github repo 
+- ![img_47.png](images/img_47.png) we have copied it here now lets change encrypt the email id too with the same mechanism .
+- ![img_48.png](images/img_48.png) we have done this too but we need to make some changes here in email that is add {cipher} inside the double quotes before the encrypted value of email.
+- ![img_49.png](images/img_49.png) as can be seen now let's simply check what values will we get when we run the accounts app and hit one of its api.
+- ![img_50.png](images/img_50.png) if you observer here then we are getting the email in a correct format where as the name is coming as a encrypted value it is because inorder to differentiate between the normal texts and encrypted value we have to add {cipher} before the encrypted text that's it .
+- so we you know know where to make the change in the github.
+- Now lets check another api decrypt exposed by our config server which can decrypt the encrypted text.
+- ![img_51.png](images/img_51.png) see here .
 
 ---
 
 ### 4️⃣ Environment Variables
 - Config passed at runtime (Docker, CI/CD, OS level)
 - Commonly used for secrets and environment-specific values
+- simply create a env variable in your os and fetch it's detail during run time either through CLI or set defaults inside a application.yml
 
 ---
 
@@ -220,6 +235,9 @@ There are multiple ways to manage configuration in Spring-based applications:
     - Azure Key Vault
 
 ---
+
+
+
 
 ## 💡 Key Takeaway
 
