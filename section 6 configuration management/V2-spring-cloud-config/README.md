@@ -319,6 +319,66 @@ We have turned the record into class and added the necessary annotation of sette
 > So let's look for a way by which we dont have to refresh everything manually.
 
 
+### Spring-cloud-bus to refresh the configs across multiple apps or instances just by hitting one api:
+* You can read more about spring cloud bus at spring.io/projects/spring-cloud-bus.
+* Bascially spring cloud bus is a project by spring which helps applications in production and consuming a global event like change of configurations or other management instructions .
+* Suppose there is a change in configs of one of the application so when you hit the api /actuator/busrefresh what it does is , it refreshes the app as well as broadcasts a message that the current app has triggered a busrefresh event and other apps should also get their configurations refreshed .
+* Well bus is the producer as well as consumer so when the global event is received by other apps they have the spring cloud bus dependency too so they also consume the message and get themselves refreshed.
+* But the bus can only produce and consume the event it cannot transfer the event so we now need a message broker like kafka or rabbitmq which will act as a message broker and will carry the event/message to other services or app's which are registered to the rabbitmq.
+* Adding the bus dependency is necessary to all the services althought the buses of different microservices are independent and dont talk directly to each other but still it is important as bus produces and consumes info.
+* let understand step by step: first add the spring cloud bus dependency to all the app's then either install and start message broker (RabbitMq) or run it in a docker container and expose it.
+* Then add the rabbitmq details to the applications.yml of all the apps so that they are registerd with the same message broker otherwise how will they get the message.
+* once the above is done , now after adding bus dependency the actuator api gets extended to two more api's of the bus , so we need to trigger the /actuator/busrefresh of any one of the microservice's .
+* So what the above step will do is it will first refresh the configs of the current app that invoked the busrefresh then the bus dependency of the current app will publish this message that "the current app triggered a busrefresh api" to the rabbitmq and from there all other apps who are registered with the same message broker server will consume the message via their own bus dependency and they will also refresh themselves.
+* This is how just by trigger in only 1 app the configs across all the registered app's get reflected.
+* You can also hit the bus refresh of the cofigserver for that add the dependency and also register the configserver to the same messagebroker it will publish a event.
+* But configserver even if you dont refresh still it always pulls the latest changes , it is the apps that dont fetch the latest changes unless poked.
+
+### Lets add the dependency and setup the rabbitmq and see how it works:
+* If you go to the spring initializer then you will get this ![img_86.png](images/img_86.png).
+* But dont use it because it will only give you the bus and no rabbitmq or kafka implementation so , simply go to google and ask for spring cloud bus rabbitmq ![img_87.png](images/img_87.png) it will give you this and this is what you need to add .
+* It has both spring cloud bus and rabbitmq integrated.
+* Now we need to add this dependency to all our microservices including configserver too.
+* ![img_88.png](images/img_88.png) Make sure this is enabled in all of the services even in your configserver too because this will expose all the api's of actuator and ahead.
+* Even in google you will get all the steps of how to do the setup.
+* Now we need to either download rabbitmq or start it in a docker container.
+* goto https://www.rabbitmq.com/docs/download From here you will get all the info ![img_89.png](images/img_89.png).
+* just copy the docker commands and then run that in your local.
+* it will start the docker image , to check just see the running containers in your system you will have a idea.
+* It is running on port 5672:5672 you can also check it's ui by going to http://localhost:15672 here provide the details which is guest guest.
+* Now we will register our services to this rabbitmq.
+* ![img_90.png](images/img_90.png) mention this in all of your microservices as well as configserver and yes this comes under spring.
+* spring:rabbitmq and then so on.
+* Once you have mentioned that under all of your services , now when you will start all the services they will get themselves registerd to that rabbitmq.
+* ![img_91.png](images/img_91.png) This is how the rabbitmq management looks before we started our apps .
+* ![img_92.png](images/img_92.png) Now if you look at the connections it shows 4 lets just got to the connections tab.
+* ![img_93.png](images/img_93.png) Here we have 4 connections which includes our 3 microservices and 1 configserver.
+* Now lets change the configs in the github and then we will hit the busrefresh api for any one of the service.
+* Before: Accounts-prod: ![img_94.png](images/img_94.png) After: Accounts-prod: ![img_95.png](images/img_95.png)
+* Before: Cards-prod: ![img_96.png](images/img_96.png) After: Cards-prod: ![img_97.png](images/img_97.png)
+* Before: Loans-prod: ![img_98.png](images/img_98.png) After: Loans-prod: ![img_99.png](images/img_99.png)
+* so we have done the changes now lets check what our configserver is giving before we hit the api: ![img_100.png](images/img_100.png) well it is pulling the new data.
+* Lets check what our get-contact-info api's are returning: 
+* Cards: ![img_101.png](images/img_101.png) 
+* Accounts: ![img_102.png](images/img_102.png)
+* Loans: ![img_103.png](images/img_103.png) 
+* So we are still getting the old data .
+* just hit actuator to see the new apis which are exposed: ![img_104.png](images/img_104.png).
+* We have the bus api too.
+* Lets just hit the actuator/busrefresh of anyone of the services lets do that for accounts.
+* before hitting: ![img_105.png](images/img_105.png) Response: ![img_106.png](images/img_106.png) we will get this 204 success reponse .
+* Now hit the get-contact-info api for all the services and check if they refreshed their config or not.
+* Accounts: ![img_107.png](images/img_107.png)
+* Cards:![img_108.png](images/img_108.png)
+* Loans: ![img_109.png](images/img_109.png)
+* See with just one api of any one app all got refreshed , you can hit the busrefresh for your config server too.
+
+### There is a minor issue here that is everytime we have to manually busrefresh anyone app connected then only others will reflect the changes , What if we could trigger a event from github only even without disturbing or manually calling the busrefresh , i mean right after we have done any changes in the repo it will automatically refresh the configs of all the apps.
+### For that there is a solution and that is using github webhook's.
+
+
+
+
 
 
 ## 💡 Key Takeaway

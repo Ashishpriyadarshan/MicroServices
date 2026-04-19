@@ -1,6 +1,11 @@
 spring:
   application:
     name: "configserver"
+  rabbitmq:
+    host: "localhost"
+    port: 5672
+    username: "guest"
+    password: "guest"
   profiles:
     active: git
     #active: native
@@ -25,3 +30,10 @@ server:
 
 encrypt:
   key: "RGqJ5kYWHiCqwBpyP6H4Ww5LBF+964TW1bNTL/mqyG4="
+
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include:  "*"
