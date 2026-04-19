@@ -236,6 +236,88 @@ There are multiple ways to manage configuration in Spring-based applications:
 
 ---
 
+### Refreshing configs during runtime :
+Think of a scenario where there is a change in the configs suppose in the username or email or any other field and that is done in the main branch of the config files , and for the new changes to be reflected we have to restart the cleint app.
+cofigserver doesn't need any restart as it always fetches the details from the github main branch and not some local repo.
+Configserver always fetches the new or latest files from the config files repo whenever the files are required by any application.
+But for the microservices like accounts , loans or etc these services need to be restarted because they take the properties only once and that is while they are requesting the configs to the configserver after that no changes are reflected here.
+
+So inorder for the new changes to be reflected while the app is running there is a way by which we dont need to restart the app.
+And that is using the actuator .
+Adding actuator dependency enables some end points of the app using which we can make so many changes during runtime or refresh the properties also without shutting donw the running instance of the app.
+Lets see how we can do that.
+
+So what we need to do is enable the actuator dependency inside all of our microservices because our config server due to a property that is the force-pull: true will always 
+pull the latest changes be it in github , or file system or anyother place so we dont need to do anything but our microservice always start with the whatever was initialized during the first startup 
+so they need the actuator so that we can refresh their configs without restarting the app.
+So make sure that in the pom.xml of all the microservies we have the below.
+![img_52.png](images/img_52.png)
+
+*** Another very important change we have to do in one of the DTO classes is we have to change the record class from record to CLASS as in our case we have used the Record type of class inorder to take the info from the application.yml during run time 
+and Record class are used to store info only and they have getters but no setters so it is not possible to set values during runtime so we need to change the class type.
+### Changes below:
+| Name(microservice) | Before                           | After                                |
+|--------------------|----------------------------------|--------------------------------------|
+| Accounts           | ![img_53.png](images/img_53.png) | ![img_54.png](images/img_54.png)     |
+| Cards              | ![img_55.png](images/img_55.png) | ![img_56.png](images/img_56.png)     |
+| Loans              | ![img_57.png](images/img_57.png) | High![img_58.png](images/img_58.png) |
+
+We have turned the record into class and added the necessary annotation of setter and getter .
+
+* Now lets expose the actuator end-points because by default all it's end points are not exposed:
+* ![img_59.png](images/img_59.png) Do this inside all of your application.properties to expose all the api end points of actuator otherwise you can also specify which all api's you want instead of having all.
+* Now lets see how will it help us.
+
+
+### How the changes reflect during run-time:
+* First build all your app's and then start the cofig server first then start all the microservices.
+* In our case by default the prod profile is active for all the microservices so lets have a look at the prod configs and what we are getting in the postman.
+* Lets have a look at accounts/get-contact-info api:
+* ![img_60.png](images/img_60.png) This is what we are getting and lets also see what's there in the github too:
+* ![img_61.png](images/img_61.png) This is in github configs so let me try to do a change in the github and see whether it is reflecting in our app or not.
+* ![img_62.png](images/img_62.png) Suppose here i have change the name field and commit the changes now let's see if the same change is reflecting in our app or not.
+* ![img_63.png](images/img_63.png) The changed name has not yet reflected in our accounts app why and how , before that just check the configserver app.
+* ![img_64.png](images/img_64.png) if we observe here then the new changed field is getting reflected here but not in our accounts app why , it is because our configserver always pulls the latest changes even without us manually doing anything to the configserver app but our microservice application is taking all the values it needs during the startup only that's why now even after chaning the value in github and configserver reflecting it still our microservice is not taking it as it only contacts the configserver during startup that's it.
+* So how what should we do for our app to reflect the new changes.
+* We will use the actuator of our accounts app .
+* ![img_65.png](images/img_65.png) if you use the /actuator after the server location of our accounts app then you will get a list of api's which the actuator offers.
+* From this we need the refresh api.
+* ![img_66.png](images/img_66.png) we need this refresh api , what it will do is without restarting our app it will take all the configs again during run-time.
+* ![img_67.png](images/img_67.png) But here is a problem if we try to invoke this api then it will not work as it doesn't support GET Method so we have to use the POST method in Postman to make it work.
+* ![img_68.png](images/img_68.png) As soon as we hit the actuator api of the accounts app we get the respone , now call the get-contact-info api and see the magic.
+* Btw what does the above response mean it means config version of the app was changed and accounts.contactDetails.name was the changed config.
+* ![img_69.png](images/img_69.png) See this time we finally got the updated values reflected here .
+* Lets repeate all the above steps for all the microservices.
+
+### Lets change the configs of all the microservice and oberve the challenges:
+* Lets just change the message from prod to PRODUCTION 
+* | Name(microservice) | Before                           | After                            |
+  |--------------------|----------------------------------|----------------------------------|
+  | Accounts           | ![img_70.png](images/img_70.png) | ![img_71.png](images/img_71.png) |
+  | Cards              | ![img_72.png](images/img_72.png) | ![img_73.png](images/img_73.png) |
+  | Loans              | ![img_74.png](images/img_74.png) | ![img_75.png](images/img_75.png) |
+
+* SO as can be seen we have just changed the message field and we know that configserver will pull all the new changes but for individual microservices the changes will only be reflected upon calling their respective actuator in POST Method.
+* ![img_76.png](images/img_76.png) Accounts is still showing the old info.
+* ![img_77.png](images/img_77.png) Cards is still showing the old info.
+* ![img_78.png](images/img_78.png) Loans is still showing the old info.
+* Lets call the individual actuators:
+* Accounts: ![img_79.png](images/img_79.png) ![img_80.png](images/img_80.png)
+* Lets do a check just by calling accounts actuator will other apps also reflect the changes?
+* ![img_81.png](images/img_81.png) Loans is still showing the old value.
+* So we will have to call individual actuators only.
+* Loans: ![img_82.png](images/img_82.png) ![img_83.png](images/img_83.png)
+* Cards: ![img_84.png](images/img_84.png) ![img_85.png](images/img_85.png)
+* 
+
+### We understood a way to refresh configs of our apps but there is a big problem here.
+
+> The issue is we have to individually call the actuators of all the respective app's.
+> In production scenario we have 100's and 1000's maybe more microservices running and most importantly multiple instances of same app are running.
+> Do you think you can manually do the task of individually calling the actuator for all ?
+> In that case there will be abnormal activity across your app's like one instance will be returing x while other be returing Y so that is not a good scenario .
+> So let's look for a way by which we dont have to refresh everything manually.
+
 
 
 

@@ -4,7 +4,7 @@ spring:
   application:
     name: "accounts"
   profiles:
-    active: "qa"
+    active: "prod"
     ##Even if you dont mention active profile still it is ok , it will load the default accounts.yml from the config server.
   datasource:
     url: jdbc:h2:mem:testdb
@@ -21,4 +21,11 @@ spring:
     show-sql: true
   config:
     import: "optional:configserver:http://localhost:8071/"
+
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include:  "*"
 
