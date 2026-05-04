@@ -1,0 +1,39 @@
+spring:
+  application:
+    name: "configserver"
+  rabbitmq:
+    host: "localhost"
+    port: 5672
+    username: "guest"
+    password: "guest"
+  profiles:
+    active: git
+    #active: native
+
+  cloud:
+    config:
+      server:
+        #native:
+          #search-locations: "classpath:/config"
+          #search-locations: "file:///D://Coding Lectures//config"
+         git:
+           uri: "https://github.com/Ashishpriyadarshan/microservices-config.git"
+           username: Ashishpriyadarshan
+           password: ${GIT_TOKEN}
+           default-label: main
+           timeout: 5
+           clone-on-start: true
+           force-pull: true
+
+server:
+  port: 8071
+
+encrypt:
+  key: "RGqJ5kYWHiCqwBpyP6H4Ww5LBF+964TW1bNTL/mqyG4="
+
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include:  "*"
