@@ -109,3 +109,38 @@ lets check the individual api's:
 
 ### Now we will make our 2nd commit: In the next lecture we will make changes in the docker compose file as per our needs:
 ### commit message: "Made changes to the application.yml of configserver | Exposed some health probes like liveness and readiness | Added actuator dependency | Monitored the status and ran rabbitmq server locally on docker v 3.13"
+
+___
+
+# Updating the docker compose file as per liveness and readiness of the configserver:
+* configserver:
+* ![img_32.png](images/img_32.png)
+* It looks like this but lets make the necessary changes:
+* ![img_33.png](images/img_33.png) We have added this line of code.
+* This will check whether the app is ready or not inside the container but the thing is as soon as container is created it will be executed and it will always return 1 exit as it takes time for the app to finally start and get ready inside the container.
+* So for that lets add more things to it.
+* ![img_34.png](images/img_34.png) Now here start_period means execute the code after 10s of starting the container and wait for 5s at max to get a response .
+* and if the response is false then try the same command again with a interval of 10s and at max try 10 retries , if it still fails then exit.
+* Now we have set the healthcheck of the configserver but this only means we are requesting a check on the health of the configserver.
+* Still till now we have not made it a dependency on other services so lets do that.
+* Accounts: before : ![img_35.png](images/img_35.png)
+* Now: ![img_36.png](images/img_36.png) 
+* Now the accounts container depends on the configserver but still it will not wait for it to be ready and accounts container will run as soon as the configserver container starts and doesnt care if it is ready or not.
+* so lets make the needed changes:
+* ![img_37.png](images/img_37.png) See there are many options but select service_healthy which means service is UP.
+* Now copy the depends_on part to all the microservices:
+* So once we have copied it to all of our microservices now only when the configserver has successfully started with a healthy status then only the other containers will be created and will run.
+* Now we need to add one more service to our docker compose file that is the rabbitmq as all our services will be using the same rabbitmq server.
+* ![img_38.png](images/img_38.png) we have also added the rabbitmq but here also we need to add condtion that is rabbitmq should start first then only configserver will start as configserver is dependent on it.
+* so for that lets make the changes:![img_39.png](images/img_39.png) 
+* Now make changes under configserver service : make it dependent on it. ![img_40.png](images/img_40.png)
+* See we made it dependent on rabbitmq , like now usless rabbitmq starts it will also not start.
+* ![img_41.png](images/img_41.png)
+* You can also ask claude like how to make configserver dependent on rabbitmq , like unless rabbitmq starts successfully the configserve contianer wont be created.
+* Our accounts , loans , cards also depend on the rabbitmq but we are not mentioning it in their dependson as they all are dependent on configserver and configserver is dependent on the rabbitmq thats why 
+* rabbitmq->configserver then configserver-> rest of the containers.
+* Also, we forgot to mention the network name in the rabbitmq it is important as we want to isolate all of our containers even inside the docker machine otherwise if tomorrow you start any other project then all of the projects will by default be running inside the default network of docker.
+
+
+### 3rd Commit . Next lecture we will learn how we can optimize our docker compose files like we have so many things getting repeated again and again.
+### commit message: "Updated the docker compose file as per the dependency of configserver on other containers | Added rabbitmq service and made it a dependency for the configserver | added some health check commands"

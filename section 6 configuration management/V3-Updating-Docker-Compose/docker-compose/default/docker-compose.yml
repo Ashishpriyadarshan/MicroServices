@@ -1,10 +1,37 @@
 services:
 
+  rabbitmq:
+    image: rabbitmq:3.13-management
+    hostname: rabbitmq
+    ports:
+      - "5672:5672"
+      - "15672:15672"
+    environment:
+      RABBITMQ_DEFAULT_USER: guest
+      RABBITMQ_DEFAULT_PASS: guest
+    healthcheck:
+      test: rabbitmq-diagnostics check_port_connectivity
+      interval: 10s
+      start_period: 30s
+      retries: 10
+    networks:
+      - microdemo
+
+
   configserver:
     image: "captainashish/configserver:s6"
     container_name: "configserver-microservice"
     ports:
       - "8071:8071"
+    healthcheck:
+      test: "curl --fail --silent localhost:8071/actuator/health/readiness | grep UP || exit 1 "
+      start_period: 10s
+      timeout: 5s
+      interval: 10s
+      retries: 10
+    depends_on:
+      rabbitmq:
+        condition: service_healthy
     deploy:
       resources:
         limits:
@@ -18,6 +45,9 @@ services:
     container_name: accounts-microservice
     ports:
       - "8080:8080"
+    depends_on:
+      configserver:
+        condition: service_healthy
     deploy:
       resources:
         limits:
@@ -34,6 +64,9 @@ services:
     container_name: loans-microservice
     ports:
       - "8090:8090"
+    depends_on:
+      configserver:
+        condition: service_healthy
     deploy:
       resources:
         limits:
@@ -51,6 +84,9 @@ services:
     container_name: cards-microservice
     ports:
       - "9000:9000"
+    depends_on:
+      configserver:
+        condition: service_healthy
     deploy:
       resources:
         limits:
