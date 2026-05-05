@@ -44,3 +44,68 @@
 
 ### WE did our first commit till the above point with the name:
 ### "Directories created | Docker-compose file created | Configserver mapped properly | Environment variables also set for individual microservices"
+
+
+
+________
+
+# LiveNess and Readiness :
+* In cloud environements we just deploy our app into some container orchestartion platforms like kubernetes and it is not our task to keep checking whether our app is up or not , whether it needs scaling up or scaling down , or is our app dead then it needs a new instance to be started , or maybe restarted.
+* All this things are done by container orchestration platfroms now the thing is we dont do it manully so the conainter orchestrations platfroms do it but these platforms also need some info from the containers or running instance's so that they have the idea whether the app is running or not properly.
+* And there comes the health probes or health checking parameters like liveness and readiness and there are other parameters too which helps the platform to understand the current situation of the running instance.
+
+### First lets understand LiveNess:
+A liveness probe sends signal that the container or application is either alive(passing) or dead(failing).
+if the container is alive then no action is needed because the current state is good . if the continer is dead then an attempt should be made to heal the application by restarting it .
+
+* In simple words liveness answers a true or false questions: "is the container alive or not"
+* Platforms like kubernets invokes this probe to check the status at regular intervals inorder to perform any task be it scaleup or scaledown or restart etc.
+
+### Readiness:
+It bascially means whether your app is ready to recieve incoming requests or not.
+Liveness means whether the app is up or not , but readiness means whether your app is free from all the background processings and is ready to receive signals or not.
+Suppose you just started your app and the termainal is also showing the 1st line like started ut in it's background it has some dependencies like maybe postProcessing or DB processign or may be waiting for some other service , this things tells us whether the app is finally ready or not.
+It's like a car is ready to be driven but do u have the DL , Registration , Fuel , Roadpermit etc then only your car will run on road right.
+
+* There is a common scenario where your container is alive but cannot handle the incoming requests ( a common scenario during startup)
+* you want the readiness probe to fail . So that traffic will not be sent to a container which isn't ready for it.
+* if someone prematurely sends network traffic to the container it can cause the load balancer or router to return a 502 error to the client and terminate the request . The client would get a connection refused error message .
+* In simple words readiness answers a true or false question is the container ready to receive network traffic or not.
+
+In springboot apps actuator gathers the info for "Liveness" and "Readiness" information from the applicationavailaibilty interface and uses that information in deicated health indicators : LivensssStateHealthIndicator and ReadinessStateHealthIndicator. This indicators showup on the global health endpoint ("/actuator/health").
+They are also exposed as seperate HTTP probes by using health groups: ```/actuator/health/liveness``` and ```/actuator/health/readiness```
+
+
+#### Since we are concerned that first our configserver must start so for that case we will add the actuator dependency to it's pom.xml:
+![img_16.png](images/img_16.png) As can be seen here we have added it.
+Now we need to make some code changes too , i mean changes in the application.yml:
+![img_17.png](images/img_17.png) Here under the management we will have to add the some end points:
+![img_18.png](images/img_18.png) So what we have done is we have mentioned the readinessstate: enabled : true which means we have told the actuator to enable the readinessstate info of our app.
+similarly livenessstate: enabled: true means we have told the actuator to show us the info of the livenessstate of our app.
+then in the endpoints we have exposed the health probes which will allow us to hit the api's to check the info the liveness and readiness.
+
+### Lets see how it works so lets just start our configserver app:
+![img_19.png](images/img_19.png) upon hitting this api we get the below info on the screen:
+![img_20.png](images/img_20.png) Status is down?
+lets check the individual api's:
+![img_21.png](images/img_21.png)
+![img_22.png](images/img_22.png)
+* Livenss is working fine. lets check for readiness:
+* ![img_23.png](images/img_23.png)
+* It also says up but the status is down in actuator/health.
+* It is because if you look at the terminal response of the configserver then you will see that it is dependent on the rabbitmq which we haven't yet started that's why it says down.
+* ![img_24.png](images/img_24.png) See here.
+* Now lets just start the rabbitmq server and then lets do a check.
+* ![img_25.png](images/img_25.png) we have started the extraction process.
+* ![img_26.png](images/img_26.png)
+![img_27.png](images/img_27.png)
+* Now again start the configserver and check the status this time:
+* ![img_28.png](images/img_28.png) We used this version as the previous one had some issues.
+* ![img_29.png](images/img_29.png) Once the rabbitmq runs this showsup on the terminal now lets start the configserver:
+* ![img_30.png](images/img_30.png) This shows up on the terminal.
+* ![img_31.png](images/img_31.png) Now see the status it is UP .
+* You can also check readiness and liveness they will show UP.
+* which was earlier down so now we know how the health probes work.
+
+### Now we will make our 2nd commit: In the next lecture we will make changes in the docker compose file as per our needs:
+### commit message: "Made changes to the application.yml of configserver | Exposed some health probes like liveness and readiness | Added actuator dependency | Monitored the status and ran rabbitmq server locally on docker v 3.13"
