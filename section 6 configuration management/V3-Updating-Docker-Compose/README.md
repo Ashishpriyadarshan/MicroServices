@@ -144,3 +144,47 @@ ___
 
 ### 3rd Commit . Next lecture we will learn how we can optimize our docker compose files like we have so many things getting repeated again and again.
 ### commit message: "Updated the docker compose file as per the dependency of configserver on other containers | Added rabbitmq service and made it a dependency for the configserver | added some health check commands"
+
+___
+
+## Optimize the docker compose file:
+* As we have noticed there are so many repeated lines in our docker compose files , like multiple lines are getting repeated again and again .
+* In order to sort that out we can create a external file with the name common-config.yml which will have common commands inside them and we just need to use them directly inside our main docker compose file.
+* Lets see what are the common lines:
+* ![img_42.png](images/img_42.png) If you observer then these are some of the lines which are getting repeated again and again under almost all of the services like accounts , configserver , loans , cards .
+* Lets first create a file with the name common-config.yml create it under the same default folder.
+* ![img_43.png](images/img_43.png) .
+* Here inside the common-config.yml .
+* ![img_44.png](images/img_44.png) here just like normal docker-compose file we write service under which we can create as many as service as we want and give them any name.
+* Like i have given here network-deploy-service under that i have my networks with the values as microdemo.
+* If you remember how we used to set some random properties and values inside the application.yml like that we are also doing here.
+* Now lets furthur improve:
+* Now let me bring all the common configs of all the services like ![img_42.png](images/img_42.png)
+* Lets do it.
+* ![img_46.png](images/img_46.png) See here whenever we write extends and then we are giving below a service it means it will copy whatever is inside the service like now inside the microservice-base-config we are going to have networks: -microdemo too.
+* You may ask why we need to create a service like network-deploy-service for networks and why cant we just include network inside the microservice-base-config?
+* It is because we need only networks for the rabbitmq where as rest all are needed by other services.
+* Lets try to spot more repetative stuffs:
+* ![img_47.png](images/img_47.png) This one is getting repeated in almost all the service but we should not use this as in latest versions of docker we cannot use extends and depends_on togther so let it be hardcoded in the same docker compose file.
+* Other than this we have : ![img_48.png](images/img_48.png)
+* Here we have the SPRING_CONFIG_IMPORT common in 3 of our services so.
+* ![img_48.png](images/img_48.png) This is the common config file now.
+* Now we have to make changes in the docker compose file too:
+* Before: ![img_49.png](images/img_49.png)
+* After: ![img_50.png](images/img_50.png) Changes that we made here.
+* ![img_51.png](images/img_51.png) Made some changes here to the microservice-base-config.
+* configserver: before: ![img_52.png](images/img_52.png)
+* After: ![img_53.png](images/img_53.png)
+* Accounts: Before: ![img_54.png](images/img_54.png)
+*  ![img_55.png](images/img_55.png) We will be importing the microservice-configserver-config as it has all that is needed.
+* After: ![img_56.png](images/img_56.png) See how we have imported , in this way we will be doing to other services as well.
+* Loans: Before: ![img_57.png](images/img_57.png)
+* After: ![img_58.png](images/img_58.png)
+* Cards: Before: ![img_59.png](images/img_59.png)
+* After: ![img_60.png](images/img_60.png)
+* So finally we are done with optimizing our compose file .
+
+
+### 4th commit : Next lecture we will start creating and pushing our new docker images to the docker hub with the new tag s6.
+### commit message: "Made optimizations to the existing docker compose file | common-config.yml | understood extends keyword "
+
