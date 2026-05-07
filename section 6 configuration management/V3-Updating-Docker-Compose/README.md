@@ -188,3 +188,43 @@ ___
 ### 4th commit : Next lecture we will start creating and pushing our new docker images to the docker hub with the new tag s6.
 ### commit message: "Made optimizations to the existing docker compose file | common-config.yml | understood extends keyword "
 
+___
+
+## Creating New docker images and pushing them using google jib:
+### Accounts:
+* Check whether we have the google jib plugin used in the pom.xml or not and also make sure to delete the contents of the target folder.
+* ![img_61.png](images/img_61.png) We have the plugin here just change that temp to s6.
+* ![img_62.png](images/img_62.png) .
+* Now open the location where the pom.xml of accounts is present in the terminal.
+* ![img_63.png](images/img_63.png)
+* Now use the command ``mvn compile jib:dockerBuild``
+* ![img_64.png](images/img_64.png)
+* Once you execute that command docker will start creating the image.
+* ![img_65.png](images/img_65.png) See the image was created now do the same for the remaining applications too.
+
+### Cards:
+* ![img_66.png](images/img_66.png)
+* ![img_67.png](images/img_67.png)
+* 
+
+
+### Loans:
+* ![img_68.png](images/img_68.png)
+* ![img_69.png](images/img_69.png)
+
+
+### Configserver:
+* ![img_70.png](images/img_70.png)
+* ![img_71.png](images/img_71.png)
+
+### Now as we have created all the images so lets just check our docker: we dont need rabbitmq image as soon as our compose file runs it will create a rabbitmq image for us.
+![img_72.png](images/img_72.png) See we have got all the images.
+
+## Lets push the images one by one.
+* Accounts: ![img_73.png](images/img_73.png)
+* Loans: ![img_74.png](images/img_74.png)
+* Cards: ![img_75.png](images/img_75.png)
+* configserver: ![img_76.png](images/img_76.png)
+
+### 5th commit : Next we will see how we can start all our images with the compose file.
+### commit message: "Pushed the docker images from local to hub "

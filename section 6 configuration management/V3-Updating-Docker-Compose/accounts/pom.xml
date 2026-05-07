@@ -160,7 +160,7 @@
                 <configuration>
                     <to>
                         <image>
-                            captainashish/${project.artifactId}:temp
+                            captainashish/${project.artifactId}:s6
                         </image>
                     </to>
                 </configuration>

@@ -138,12 +138,13 @@
 					</annotationProcessorPaths>
 				</configuration>
 			</plugin>
+
 			<plugin>
 				<groupId>org.springframework.boot</groupId>
 				<artifactId>spring-boot-maven-plugin</artifactId>
 				<configuration>
                     <image>
-                        <name>captainashish/${project.artifactId}:s4</name>
+                        <name>captainashish/${project.artifactId}:s6</name>
                     </image>
 					<excludes>
 						<exclude>
@@ -153,6 +154,20 @@
 					</excludes>
 				</configuration>
 			</plugin>
+
+
+            <plugin>
+                <groupId>com.google.cloud.tools</groupId>
+                <artifactId>jib-maven-plugin</artifactId>
+                <version>3.5.1</version>
+                <configuration>
+                    <to>
+                        <image>
+                            captainashish/${project.artifactId}:s6
+                        </image>
+                    </to>
+                </configuration>
+            </plugin>
 		</plugins>
 	</build>
 
