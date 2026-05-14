@@ -36,6 +36,12 @@ services:
     extends:
       file: common-config.yml
       service: microservice-base-config
+    environment:
+      GIT_TOKEN: ${GIT_TOKEN}
+      SPRING_RABBITMQ_HOST: rabbitmq
+      SPRING_RABBITMQ_PORT: 5672
+      SPRING_RABBITMQ_USERNAME: guest
+      SPRING_RABBITMQ_PASS: guest
 
 
   accounts:
@@ -48,9 +54,14 @@ services:
         condition: service_healthy
     environment:
       SPRING_APPLICATION_NAME: "accounts"
+      SPRING_RABBITMQ_HOST: rabbitmq
+      SPRING_RABBITMQ_PORT: 5672
+      SPRING_RABBITMQ_USERNAME: guest
+      SPRING_RABBITMQ_PASS: guest
     extends:
       file: common-config.yml
       service: microservice-configserver-config
+
 
 
   loans:
@@ -63,6 +74,10 @@ services:
         condition: service_healthy
     environment:
       SPRING_APPLICATION_NAME: "loans"
+      SPRING_RABBITMQ_HOST: rabbitmq
+      SPRING_RABBITMQ_PORT: 5672
+      SPRING_RABBITMQ_USERNAME: guest
+      SPRING_RABBITMQ_PASS: guest
     extends:
       file: common-config.yml
       service: microservice-configserver-config
@@ -78,6 +93,10 @@ services:
         condition: service_healthy
     environment:
       SPRING_APPLICATION_NAME: "cards"
+      SPRING_RABBITMQ_HOST: rabbitmq
+      SPRING_RABBITMQ_PORT: 5672
+      SPRING_RABBITMQ_USERNAME: guest
+      SPRING_RABBITMQ_PASS: guest
     extends:
       file: common-config.yml
       service: microservice-configserver-config

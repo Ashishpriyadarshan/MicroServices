@@ -228,3 +228,119 @@ ___
 
 ### 5th commit : Next we will see how we can start all our images with the compose file.
 ### commit message: "Pushed the docker images from local to hub "
+
+## executing the docker compose file that we had created:
+* As we have pushed all our images to the docker hub now it is time for us to run all of it with a single command.
+* First of all simply delete your existing images with tag s6 in your local otherwise it might cause space issues, because anyways we will be pulling all the images from the docker hub only.
+* Open the terminal in the folder which has the docker compose as well as the docker common config file.
+* ![img_77.png](images/img_77.png)
+* Now execute the command ``docker compose up -d``
+* ![img_78.png](images/img_78.png)
+* ![img_79.png](images/img_79.png)
+  * We can see here as we had requested the heath status of rabbitmq so it is showing healthy but Configserver failed to start , if you see the error then it says Error in dependency .
+  * Lets find where the bug is.
+  * If you go and check the docker desktop app then you will see we have pulled all the images and started some containers but all containers have not started as , most of them are dependent on configserver and since configserver failed to start so rest also could not start.
+  * ![img_80.png](images/img_80.png)
+  * ![img_81.png](images/img_81.png)
+  * If you see above then only rabbitmq is running.
+  * Anyways lets just debug.
+  * If we open the logs of the configserver container in our docker desktop then it says this:
+  * ![img_82.png](images/img_82.png)
+  * Not authorized , means our app is not able to connect properly with the github repo.
+  * Lets check the configs of our configserver.
+  * ![img_83.png](images/img_83.png)
+  * Well well the problem is here , that is we are taking a env varible from our PC for the password like ${GIT_TOKEN} and this variable is set in our local system , But once docker image is created and when the app executes in it's own isolated env it doesnt have any env with the name GIT_TOKEN so that is what is causing the issue so how will we solve it.
+  * solution is either hardcode the value of the git_token in the config rather than sending it as an env variable or you can just set the value of the ${GIT_TOKEN} during the startup of your docker images.
+  * But there will be way more solutions lets look for solutions in chatgpt or claude maybe.
+  * well one solution is to hardcode the token to the config file , and the 2nd one is to create a .env file and create a variable there and then just assign it your original token . and yes that token value will be picked up by your compose file too you just have to keep the .env in the same folder as the compose file and also include the variable that you have created to your compose file let me show you how to do that.
+  * ![img_84.png](images/img_84.png) .env created now,
+  * ![img_85.png](images/img_85.png) Now hardcode here whatever is your token.
+  * Now just include it under the environment of the configserver in the compose file.
+  * Before: ![img_86.png](images/img_86.png)
+  * After: ![img_87.png](images/img_87.png)
+  * Now we are ready the .env file will be automatically read by the compose file , else there is a better approach if you have alredy setuped your env variable in your system them instead of creating any env and hardcoding the token you can simply include the token under that environment: GIT_TOKEN: {$GIT_TOKEN} becasue the compose file will look for env variables in your local system first and if it founds any then it will simply insert the value.
+  * so lets just remove that env file.
+  * Ok so now we are ready lets again run the compose file this time.
+  * ![img_88.png](images/img_88.png) execute the same command in the same location again.
+  * ![img_89.png](images/img_89.png) See this time first the network was created inside the docker linux then one after another image started , lets check how the api's are performing.
+  * Postman:
+  * Accounts: ![img_90.png](images/img_90.png)
+  * Git_Hub: ![img_91.png](images/img_91.png)
+  * Cards: We need to make some changes here to the Cards config the default one as well as the compose file because we are getting the profile data of prod env.
+  * Lets see what we can do here.
+  * ![img_92.png](images/img_92.png)
+  * here we have set the profile to prod but we have also set the profile to default in compose file right.
+  * ![img_93.png](images/img_93.png) Here in the common config we have this still why isnt our compose file overriding the default properties, it is because it is supposed to be SPRING_PROFILES_ACTIVE and not SPRING_PROFILE_ACTIVE.
+  * So lets change the common config file a little bit and then restart the entire compose process again.
+  * Before: ![img_94.png](images/img_94.png)
+  * After: ![img_95.png](images/img_95.png)
+  * Lets run the compose file again :
+  * ![img_96.png](images/img_96.png)
+  * Well everything is running good now , now lets just check details of cards and loans microservice whether their config files have changed or not , earlier it was set to prod in their default application.yml now lets see.
+  * Cards: ![img_97.png](images/img_97.png)
+  * Git_Hub: ![img_98.png](images/img_98.png)
+  * Loans: ![img_99.png](images/img_99.png)
+  * Git_Hub: ![img_100.png](images/img_100.png)
+  * So finally it is working now without any issue .
+* Lets check another thing that is whether our bus refresh is working or not :
+* Accounts Before:
+* Git_hub: ![img_101.png](images/img_101.png)
+* Postman: ![img_102.png](images/img_102.png)
+*  Now lets change some details in the repo and then lets see whether it is reflecting or not.
+* Before that first start you compose file again and then make the changes while all your containers and running and then see whether there is any change in the property or not.
+* ![img_103.png](images/img_103.png)
+* Now change the config and lets see whether it is reflected or not.
+* ![img_104.png](images/img_104.png) Lets commit this.
+* Now accounts : ![img_105.png](images/img_105.png) It has not yet reflected here.
+* Lets backtrack it by going and looking at the logs of configserver: 
+* ![img_107.png](images/img_107.png) Well the connection to the rabbitmq is getting refused that is the reason why our other apps couldnt refresh their configs because the configserver is unable to connect to the rabbitmq so how will it publish a bus refresh there.
+* Still lets check the accounts config in configserver:
+* ![img_108.png](images/img_108.png) The changes are with configserver but configserver was unble to publish a busrefresh thats it .
+* So lets fix this:
+* ![img_109.png](images/img_109.png) Here is the problem that is in almost all our apps default config we have set the value for the rabbitmq host as localhost but once all of our apps run in their own container then for them their local host is their own container and no container has rabbitmq in their own containers , we had done localhost as we were testing in local env.
+* For this lets make changes to the docker-compose file rather than changing their default config lets just give some values to the docker compose file.
+* Simply give your docker compose file details to the claude and also tell him that you have rabbitmq values set in the default config of all the apps as localhost and it is not working when all of them are running in their own container so what can we do then it will retun you a new docker compose with some new specs:
+* ![img_110.png](images/img_110.png)
+* ![img_111.png](images/img_111.png)
+* ![img_112.png](images/img_112.png)
+* ![img_113.png](images/img_113.png)
+* See either we have to change at the default config level and set the host as rabbitmq the name of the service which the apps will use and the value will be taken during run time after the containers as created .
+* The name of the service rabbitmq is there in the compose file from there the apps will get idea like to what we are referring and it is possible because of one thing that is the networks which we have kept common for all of our microservices otherwise they wont be able to connect to the rabbitmq.
+* ![img_114.png](images/img_114.png)
+* See here i am talking about the service name not the hostname .
+* Lets go for the fastest fix that is giving details directly in the docker compose file.
+* before: ![img_115.png](images/img_115.png)
+* After: ![img_116.png](images/img_116.png)
+* ![img_117.png](images/img_117.png)
+* ![img_118.png](images/img_118.png)
+* ![img_119.png](images/img_119.png)
+* See how we have set the values now again start the docker compose file and again make some changes to the repo but before making any changes make sure the busrefresh api with proper port and all is exposed by your local system so that github webhook can hit the right api location otherwise it might not work and you will stay confused.
+* 
+* First run the compose file as soon as all the containers run , just use ngrok to expose the port , The port of the configserver container which is ig 3071 or 8071\\\\
+* Then use ngrok to expose the port of the configserver to the github wehbook.
+* Step 1 : start the docker compose file. ![img_120.png](images/img_120.png)
+* Step 2 : ![img_121.png](images/img_121.png) Run this ngrok apk , it will open a command.
+* Step 3: lets just check what are the values for one of the api's before making any changes in the github Repo.
+  * Accounts:
+    * Postman: ![img_122.png](images/img_122.png)
+    * Github: ![img_123.png](images/img_123.png)
+* Step 4: Expose the local port at which configserver is running. Configserver runs at 8071. ``ngrok http 8071 `` . It will expose the 8071 port and give a URL.
+* Step 5: Now in your screen you will be getting a URL , so many details in the terminal where you ran the above command. ![img_124.png](images/img_124.png)
+* Step 6: Now open the microservice config repo of the github and then go to settings from there go to webhooks .  ![img_125.png](images/img_125.png) See here it says Last delivery was not successful . Invalid HTTP response error 404 . Which is not found . This error came because last time when we changed our configs and tried to push the new commits the webhook tried reaching for our earlier given api address but since last time we had not exposed the configserver api so it failed so now we are exposing again  and setting new api address again.
+* Step 7: ![img_126.png](images/img_126.png) Copy the forwarding URL and paste it in the payload URL.
+* Step 8: ![img_127.png](images/img_127.png) Just add a /monitor to the end of the URL as it will hit the config monitor dependency api which is inside our configserver and only after that it can post a bus refresh .
+* Step 9: ![img_128.png](images/img_128.png) Now simply update the webhook.
+* Step 10: Now since we have updated the webhook make sure to keep all the containers running and also dont shut that ngrok terminal .
+* Step 11: Validate the values :
+  * Current:  Accounts API:
+    * Postman: ![img_129.png](images/img_129.png)
+    * Github Repo: ![img_130.png](images/img_130.png)
+  * Make changes to the github repo:
+    * Github: ![img_131.png](images/img_131.png) Now just commit the changes and now hit the same URL in the postman.
+    * Current Postman : ![img_132.png](images/img_132.png) See here we have finally picked the new values without restarting the apps or containers.
+    * ![img_133.png](images/img_133.png) See our last push was also successful.
+  * Now shut all down thats it for the day.
+  * ![img_134.png](images/img_134.png) See here also .
+
+### 6th commit : Next we will just configure the compose files for different environments like qa and prod.
+### commit message: "Ran the docker compose file | Exposed the configsever port using ngrok | Made changes to GitHub repo microservices config and Validated the same in the POSTMAN"
