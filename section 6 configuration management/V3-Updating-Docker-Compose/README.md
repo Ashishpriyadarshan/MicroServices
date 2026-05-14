@@ -344,3 +344,37 @@ ___
 
 ### 6th commit : Next we will just configure the compose files for different environments like qa and prod.
 ### commit message: "Ran the docker compose file | Exposed the configsever port using ngrok | Made changes to GitHub repo microservices config and Validated the same in the POSTMAN"
+
+## Setting the Prod and QA compose files:
+* Step 1: select the two files inside the default folder and copy and paste it inside the qa and prod folders .
+* ![img_135.png](images/img_135.png)
+* ![img_136.png](images/img_136.png)
+* Now start making changes inside the compose file of for each env.
+* Step 2: Open the common-config.yml for the prod and just change the SPRING_ACTIVE_PROFILES from default to prod.
+* ![img_137.png](images/img_137.png)
+* ![img_138.png](images/img_138.png)
+* Now do the same steps for qa env as well :
+* ![img_139.png](images/img_139.png)
+* Now we are done setting the files now lets just test any one env.
+* Lets go with the prod one.
+* Steps:
+  * Step 1: open the terminal in the prod folder where the compose file for the prod env is present then .
+  * Step 2: Run the command ``docker compose up -d``
+  * Step 3: ![img_140.png](images/img_140.png)
+  * Step 4: Now once all of our containers start just goto postman and hit any api for checking the specs and make sure to validate it with github repo too.
+    * ![img_141.png](images/img_141.png)
+  * Step 5 : As all of our containers are running now lets start hitting the api's:
+    * Accounts:
+      * Postman: ![img_142.png](images/img_142.png)
+      * Github: ![img_143.png](images/img_143.png)
+    * Cards:
+      * Postman: ![img_144.png](images/img_144.png)
+      * Github: ![img_145.png](images/img_145.png)
+    * Loans:
+      * Postman: ![img_146.png](images/img_146.png)
+      * Github: ![img_147.png](images/img_147.png)
+  
+### As can be seen above everything is working fine . Finally we have demonstrated how with docker compose for different environments works.
+
+### 7th Commit: We don't need any furthur lectures on this topic | You can also check if the configserver is working fine with the webhooks or not , you just have to follow the steps mentioned unders 6th commit ngrok and expose and all.
+### Commit Message: " Copied the docker compose of the dev env to prod and qa folder | Changed just the SPRING_ACTIVE_PROFILES as per the environments, and finally we have got the desired results"
