@@ -1,0 +1,34 @@
+server:
+  port: 8080
+spring:
+  application:
+    name: "accounts"
+  profiles:
+    active: "default"
+    ##Even if you dont mention active profile still it is ok , it will load the default accounts.yml from the config server.
+  datasource:
+    url: jdbc:mysql://localhost:3306/accountsdb
+    username: root
+    password: root
+  jpa:
+    show-sql: true
+  config:
+    import: "optional:configserver:http://localhost:8071/"
+  sql:
+    init:
+      mode: ALWAYS
+
+
+  rabbitmq:
+    host: "localhost"
+    port: 5672
+    username: "guest"
+    password: "guest"
+
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include:  "*"
+

@@ -1,0 +1,23 @@
+services:
+
+  network-deploy-service:
+    networks:
+      - microdemo
+
+
+  microservice-base-config:
+    deploy:
+      resources:
+        limits:
+          memory: 700m
+    extends:
+      service: network-deploy-service
+
+
+  microservice-configserver-config:
+    extends:
+      service: microservice-base-config
+    environment:
+      SPRING_CONFIG_IMPORT: configserver:http://configserver:8071
+      SPRING_PROFILES_ACTIVE: prod
+
