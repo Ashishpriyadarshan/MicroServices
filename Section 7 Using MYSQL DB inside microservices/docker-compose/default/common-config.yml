@@ -5,6 +5,8 @@ services:
       - microdemo
 
   microservice-db-config:
+    image:
+      mysql
     healthcheck:
       test: [ "CMD" , "mysqladmin" , "ping" , "-h" , "localhost" ]
       interval: 10s

@@ -219,3 +219,82 @@ ___
 ### Commit Message: " Optimized the docker compose file by creating a common service which is getting extended by all the db services"
 
 ___
+
+## Pushing into the docker hub:
+* Dont push your mysql image to your docker hub.
+* accounts:s7 :
+  * ![img_65.png](images/img_65.png)
+  * ![img_66.png](images/img_66.png)
+* cards:s7:
+  * ![img_67.png](images/img_67.png)
+* loans:s7:
+  * ![img_68.png](images/img_68.png)
+* configserver:s7:
+  * ![img_69.png](images/img_69.png)
+
+## Lets run the docker compose file:
+* Navigate the terminal to the docker compose file location and then start.
+* ![img_70.png](images/img_70.png)
+* We're getting this error lets look for what went wrong.
+* ![img_71.png](images/img_71.png)
+* ![img_72.png](images/img_72.png)
+* Well the problem is in the common config file we have metioned everything but we forgot to mention the name of the image that our container has to use as the base image.
+* ![img_73.png](images/img_73.png)
+* Now run it.
+* ![img_74.png](images/img_74.png)
+* Well this time it worked.
+* ![img_75.png](images/img_75.png)
+* ![img_76.png](images/img_76.png)
+* There is one thing which is strange here that is the cards and loans microservice are paused or they could not start lets check their logs like what is the issue.
+* Upon going through my logs i see two major issue one says cannot connect to the configserver because it is 
+* ![img_77.png](images/img_77.png) but as far as we can remeber we have set the environment variables for the configserver too in the docker compose file which is supposed to override the default application.yml of the cards or any other microservice and my microservices are depentent on configserver so unless configserver starts they will also not start thats why you can see my app is trying to connect to the configserver again and again.
+* But then how with the same common config accounts microservice started , this means there is no issue with configservr.
+* Even in the accounts microservice logs it is trying to connect to the localhost configserver but after some time later on it is connecting to the configserver docker container.
+* Upon analyzing my docker logs we go to know that problem is happening because my cards and loans microservice are unable to connect to the db.
+* ![img_78.png](images/img_78.png)
+* ![img_79.png](images/img_79.png)
+* Observer here lets try to see what we have done wrong in the docker compose file.
+* ![img_80.png](images/img_80.png)
+* Well the problem here is very simple.
+* If our loans microservice which is hosted inside the same docker network microdemo and it is trying to access the loansdb so it should hit it's 3306 port and not 3307.
+* Because 3307 is to be used for external communication suppose if am trying to access the port 3306 of the docker container from my local machine or maybe some other cloud machine then i should hit the IP followed by the port 3307.
+* So since all the services are under the same network so they are supposed to be using the name of the service and the port which they are trying to access .
+* For example : if i am hosting multiple apps on my pc and i want to access a app in my pc then i will use localhost:port_no right , so the same thing is happening inside the microservice network as well service_name:port no because unders same network they will recognize each other by their service name.
+* ![img_80.png](images/img_80.png)
+* Same thing happens with cards as well change the port to 3306:
+  * Before: ![img_81.png](images/img_81.png)
+  * 3308 is for the external communication not for inter network communication.
+  * After: ![img_82.png](images/img_82.png)
+* Now it will work fine another thing is let me try to adjust some scripts to see if this helps our app to wait for configserver first:
+  * Before: ![img_83.png](images/img_83.png)
+  * After: ![img_84.png](images/img_84.png)
+  * depends_on first configserver then rest of the services.
+  * Do this to all the services.
+* Now run the docker compose again.
+
+### Check the containers , Status and their DB:
+* ![img_85.png](images/img_85.png)
+* ![img_86.png](images/img_86.png)
+* See this time all of our containers are running.
+* Postman : 
+  * Accounts: ![img_87.png](images/img_87.png)
+  * Loans: ![img_88.png](images/img_88.png)
+  * Cards: ![img_89.png](images/img_89.png)
+## DB :
+  * Accounts: 
+    * Postman: ![img_90.png](images/img_90.png)
+    * DB: ![img_91.png](images/img_91.png)
+  * Cards:
+    * Postman: ![img_92.png](images/img_92.png)
+    * DB:  ![img_93.png](images/img_93.png)
+  * Loans:
+    * Postman: ![img_94.png](images/img_94.png)
+    * DB: ![img_95.png](images/img_95.png)
+
+* Just do one thing now since we have 3 docker compose files for dev , qa and prod so just make the changes.
+
+### So now everything is working fine . In the upcoming lecture i will demonstrate about docker networks and host port and container port and inter service communication.
+
+
+### 3rd commit: In the upcoming lecture i will demonstrate about docker networks and host port and container port and inter service communication..
+### Commit Message: " Ran the docker composed | Issues regarding DB Connectivity sorted "
