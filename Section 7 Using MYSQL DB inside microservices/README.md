@@ -12,6 +12,7 @@ ___
 ### Lets create 3 DB's for our 3 microservices , each microservice will be having its own DB.
 
 ### Command that we used to create a DB for accounts microservice:
+* If you ever need any help like whats the command for starting a docker container for mysql with a unique name and own port definations then just simply ask that to any LLM's present over the internet.
 * ![img.png](images/img.png)
 * In the above image -p 3306:3306 means a container will run at port 3306 of our local and 3306 inside the container .
 * --name accountsdb means the name of the container .
@@ -133,3 +134,58 @@ ___
 ### 1st commit: Next we will learn what changes we need to make inside docker compose file.
 ### Commit Message: "Demonstrated the mysql in docker | Multiple mysql containers for microservices | Made config changes in all the microservices as per their DB configs"
 ___
+
+## Updating the Docker Compose file:
+### Start creating the docker images for all the microservices with their own tag like s7:
+
+* First go to their pom.xml and change the name of the image.
+* Accounts:
+  * Before: ![img_38.png](images/img_38.png)
+  * After: ![img_39.png](images/img_39.png)
+  * Command: Open the terminal in the accounts microservice project folder and then run ``mvn compile jib:dockerBuild``
+* Loans:
+  * Before: ![img_41.png](images/img_41.png)
+  * After: ![img_42.png](images/img_42.png)
+  * Command: Open the terminal at the Loans microservice project folder and then run ``mvn compile jib:dockerBuild``
+* Cards:
+  * Before: ![img_40.png](images/img_40.png)
+  * After: ![img_41.png](images/img_41.png)
+  * Command: Open the terminal at the Cards microservice project folder and then run ``mvn compile jib:dockerBuild``
+* Also, we will do this for our configserver , its not needed but we should do this:
+  * ![img_43.png](images/img_43.png)
+  * Open the terminal at the configsever folder location and then run ``mvn compile jib:dockerBuild``
+
+### Now once all of our docker images are ready we need to work on the docker compose file now:
+* ![img_44.png](images/img_44.png)
+* Open the docker compose file which we had copied from the last previous section 6.
+* There we will be creating 3 new services which will be for the DB.
+* accountsdb service:
+  * ![img_45.png](images/img_45.png)
+  * Like this we will create the rest of the service's like the loansdb and cardsdb.
+* loansdb service:
+  * ![img_46.png](images/img_46.png)
+* cardsdb service:
+  * ![img_47.png](images/img_47.png)
+* Now since we have all the services now we need to make changes to their individual microservices like add that depends_on tag:
+* Because we don't want our microservices to start unless our DB containers have started successfully.
+* Another important thing is we need to provide the credentials of our DB's to the microservices otherwise how will our microservices read or write from the DB.
+* ![img_48.png](images/img_48.png)
+* Accounts:
+  * ![img_49.png](images/img_49.png)
+* Cards:
+  * ![img_50.png](images/img_50.png) See how we are using s7 tag .
+* Loans:
+  * ![img_52.png](images/img_52.png)
+* Another very important thing that we need to do is include the depend_on because our microservices depends on their own DB's.
+* Accounts:
+  * ![img_53.png](images/img_53.png)
+  * depends_on accountsdb
+* Loans:
+  * ![img_54.png](images/img_54.png)
+  * depends_on loansdb
+* Cards:
+  * ![img_55.png](images/img_55.png)
+  * depends_on cardsdb
+
+### 2nd commit: We will optimize the compose file in the next lecture and also push the docker images to the docker hub.
+### Commit Message: " Updated the docker compose file | Created the docker images for all the microservice | Gave info of which docker image to be pulled for creation of the DB"

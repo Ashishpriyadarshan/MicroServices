@@ -147,7 +147,7 @@
                 <configuration>
                     <to>
                         <image>
-                            captainashish/${project.artifactId}:s6
+                            captainashish/${project.artifactId}:s7
                         </image>
                     </to>
                 </configuration>

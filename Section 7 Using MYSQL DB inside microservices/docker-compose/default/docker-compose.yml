@@ -1,5 +1,61 @@
 services:
 
+  accountsdb:
+    image: mysql
+    container_name: accountsdb
+    ports:
+      - 3306:3306
+    healthcheck:
+      test: ["CMD" , "mysqladmin" , "ping" , "-h" , "localhost"]
+      interval: 10s
+      timeout: 10s
+      start_period: 20s
+      retries: 10
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_DATABASE: accountsdb
+    extends:
+      file: common-config.yml
+      service: network-deploy-service
+
+
+  loansdb:
+    image: mysql
+    container_name: loansdb
+    ports:
+      - 3308:3306
+    healthcheck:
+      test: ["CMD" , "mysqladmin" , "ping" , "-h" , "localhost"]
+      interval: 10s
+      timeout: 10s
+      start_period: 20s
+      retries: 10
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_DATABASE: loansdb
+    extends:
+      file: common-config.yml
+      service: network-deploy-service
+
+  cardsdb:
+    image: mysql
+    container_name: cardsdb
+    ports:
+      - 3307:3306
+    healthcheck:
+      test: ["CMD" , "mysqladmin" , "ping" , "-h" , "localhost"]
+      interval: 10s
+      timeout: 10s
+      start_period: 20s
+      retries: 10
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_DATABASE: cardsdb
+    extends:
+      file: common-config.yml
+      service: network-deploy-service
+
+
   rabbitmq:
     image: rabbitmq:3.13-management
     hostname: rabbitmq
@@ -20,7 +76,7 @@ services:
 
 
   configserver:
-    image: "captainashish/configserver:s6"
+    image: "captainashish/configserver:s7"
     container_name: "configserver-microservice"
     ports:
       - "8071:8071"
@@ -45,11 +101,13 @@ services:
 
 
   accounts:
-    image: "captainashish/accounts:s6"
+    image: "captainashish/accounts:s7"
     container_name: accounts-microservice
     ports:
       - "8080:8080"
     depends_on:
+      accountsdb:
+        condition: service_healthy
       configserver:
         condition: service_healthy
     environment:
@@ -58,6 +116,9 @@ services:
       SPRING_RABBITMQ_PORT: 5672
       SPRING_RABBITMQ_USERNAME: guest
       SPRING_RABBITMQ_PASS: guest
+      SPRING_DATASOURCE_URL: jdbc:mysql://accountsdb:3306/accountsdb
+      SPRING_DATASOURCE_USERNAME: root
+      SPRING_DATASOURCE_PASSWORD: root
     extends:
       file: common-config.yml
       service: microservice-configserver-config
@@ -65,11 +126,13 @@ services:
 
 
   loans:
-    image: "captainashish/loans:s6"
+    image: "captainashish/loans:s7"
     container_name: loans-microservice
     ports:
       - "8090:8090"
     depends_on:
+      loansdb:
+        condition: service_healthy
       configserver:
         condition: service_healthy
     environment:
@@ -78,17 +141,22 @@ services:
       SPRING_RABBITMQ_PORT: 5672
       SPRING_RABBITMQ_USERNAME: guest
       SPRING_RABBITMQ_PASS: guest
+      SPRING_DATASOURCE_URL: jdbc:mysql://cards:3307/cardsdb
+      SPRING_DATASOURCE_USERNAME: root
+      SPRING_DATASOURCE_PASSWORD: root
     extends:
       file: common-config.yml
       service: microservice-configserver-config
 
 
   cards:
-    image: "captainashish/cards:s6"
+    image: "captainashish/cards:s7"
     container_name: cards-microservice
     ports:
       - "9000:9000"
     depends_on:
+      cardsdb:
+        condition: service_healthy
       configserver:
         condition: service_healthy
     environment:
@@ -97,6 +165,9 @@ services:
       SPRING_RABBITMQ_PORT: 5672
       SPRING_RABBITMQ_USERNAME: guest
       SPRING_RABBITMQ_PASS: guest
+      SPRING_DATASOURCE_URL: jdbc:mysql://cards:3308/cardsdb
+      SPRING_DATASOURCE_USERNAME: root
+      SPRING_DATASOURCE_PASSWORD: root
     extends:
       file: common-config.yml
       service: microservice-configserver-config
