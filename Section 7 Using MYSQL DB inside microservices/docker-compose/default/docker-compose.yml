@@ -1,59 +1,35 @@
 services:
 
   accountsdb:
-    image: mysql
     container_name: accountsdb
     ports:
       - 3306:3306
-    healthcheck:
-      test: ["CMD" , "mysqladmin" , "ping" , "-h" , "localhost"]
-      interval: 10s
-      timeout: 10s
-      start_period: 20s
-      retries: 10
     environment:
-      MYSQL_ROOT_PASSWORD: root
       MYSQL_DATABASE: accountsdb
     extends:
       file: common-config.yml
-      service: network-deploy-service
+      service: microservice-db-config
 
 
   loansdb:
-    image: mysql
     container_name: loansdb
     ports:
       - 3308:3306
-    healthcheck:
-      test: ["CMD" , "mysqladmin" , "ping" , "-h" , "localhost"]
-      interval: 10s
-      timeout: 10s
-      start_period: 20s
-      retries: 10
     environment:
-      MYSQL_ROOT_PASSWORD: root
       MYSQL_DATABASE: loansdb
     extends:
       file: common-config.yml
-      service: network-deploy-service
+      service: microservice-db-config
 
   cardsdb:
-    image: mysql
     container_name: cardsdb
     ports:
       - 3307:3306
-    healthcheck:
-      test: ["CMD" , "mysqladmin" , "ping" , "-h" , "localhost"]
-      interval: 10s
-      timeout: 10s
-      start_period: 20s
-      retries: 10
     environment:
-      MYSQL_ROOT_PASSWORD: root
       MYSQL_DATABASE: cardsdb
     extends:
       file: common-config.yml
-      service: network-deploy-service
+      service: microservice-db-config
 
 
   rabbitmq:
@@ -141,7 +117,7 @@ services:
       SPRING_RABBITMQ_PORT: 5672
       SPRING_RABBITMQ_USERNAME: guest
       SPRING_RABBITMQ_PASS: guest
-      SPRING_DATASOURCE_URL: jdbc:mysql://cards:3307/cardsdb
+      SPRING_DATASOURCE_URL: jdbc:mysql://loansdb:3307/loansdb
       SPRING_DATASOURCE_USERNAME: root
       SPRING_DATASOURCE_PASSWORD: root
     extends:
@@ -165,7 +141,7 @@ services:
       SPRING_RABBITMQ_PORT: 5672
       SPRING_RABBITMQ_USERNAME: guest
       SPRING_RABBITMQ_PASS: guest
-      SPRING_DATASOURCE_URL: jdbc:mysql://cards:3308/cardsdb
+      SPRING_DATASOURCE_URL: jdbc:mysql://cardsdb:3308/cardsdb
       SPRING_DATASOURCE_USERNAME: root
       SPRING_DATASOURCE_PASSWORD: root
     extends:

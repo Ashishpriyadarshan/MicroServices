@@ -189,3 +189,33 @@ ___
 
 ### 2nd commit: We will optimize the compose file in the next lecture and also push the docker images to the docker hub.
 ### Commit Message: " Updated the docker compose file | Created the docker images for all the microservice | Gave info of which docker image to be pulled for creation of the DB"
+
+___
+
+### There are certain things which are getting duplicated in our compose file like the :
+* ![img_56.png](images/img_56.png) Like if you see here then the image name , health check and environment details are getting repeated again and again in all of the 3 db services.
+* So let us create a new service inside the common-config file and then we will extend it and use it in the docker compose file.
+* ![img_57.png](images/img_57.png) This new service will be common for all the services like accountsdb, loansdb , cardsdb .
+* accountsdb:
+  * Before: ![img_58.png](images/img_58.png)
+  * After: ![img_59.png](images/img_59.png)
+* loansdb:
+  * Before: ![img_60.png](images/img_60.png)
+  * After: ![img_61.png](images/img_61.png)
+* cardsdb:
+  * Before: ![img_62.png](images/img_62.png)
+  * After: ![img_63.png](images/img_63.png)
+* So finally we have optimized the compose file , if we want we can have a common service for the rabbitmq specs too but lets just leave it as it is.
+
+
+## Important details:
+* ![img_64.png](images/img_64.png) Here
+* In the datasource URL : jdbc:mysql we are giving the information of the type of DB we are supposed to connect and we are connecting it using mysql connector.
+* loansdb:3307 means loansdb is the name of the service that we have inside the compose file and since all of them are connected to the same network so finding the service woudl be easy and then we need to connect to the port 3307 of that service which is the external port no for the process running at 3306 port inside the container .
+* /loansdb is the name of the database , so dont get confused between loansdb written two times.
+* hit loansdb service -> port 3307 -> which hits the 3306 port which is inside the container then hit loansdb which is the name of the db with the given creds like username and password.
+
+### 3rd commit: We will run the compose file in the next lecture .
+### Commit Message: " Optimized the docker compose file by creating a common service which is getting extended by all the db services"
+
+___
