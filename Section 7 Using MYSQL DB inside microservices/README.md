@@ -298,3 +298,72 @@ ___
 
 ### 3rd commit: In the upcoming lecture i will demonstrate about docker networks and host port and container port and inter service communication..
 ### Commit Message: " Ran the docker composed | Issues regarding DB Connectivity sorted "
+
+## Docker Networks:
+* In the last lecture we noticed that instead of using port no of the DB's like 3306 , 3307 ,3308 we were simply using their service name.
+* It is because all of them were running under the same network.
+* When a system install's docker by default if they run anything inside docker then it will run in the docker daemon but all of them will be running in the default network.
+* default network means whatever is provided by docker , if you dont mention the name of the network for any docker image then it will run in default only.
+* You can create your own network inside network like you can create as many as networks and possible.
+* A group of computers connected within the same network and recognize each other easily but external of that network they can't recognize each other and in that case we need the proper ip and port.
+* Let me give you a demonstration of why we were using the service name and port for providing the URL details to our microservices and why not we were using the hostport:
+  * When you were trying to access the accounts microservice from your local system what was the URL that you were trying to hit:
+  * ![img_96.png](images/img_96.png) You were hitting this URL right which says here localhost means the same machine and then the port no which is 8090.
+  * While in docker while running the container of the accounts microservice we had given the hostport:containerport mapping.
+  * So for the external world a world or network outside the docker eco-system for anyone to access the containerport of the docker container they have to use the hostport rather than the continerport.
+  * ![img_97.png](images/img_97.png) see here we have all the container details like which port they are running at inside the container and to which port they are exposed outside.
+  * Suppose look at cardsdb it runs at 3307:3306 means inside the docker env it has it's own container inside which the DB is running at 3306 and the same db is exposed to the host machine at port 3307.
+  * ![img_98.png](images/img_98.png) See here while accessing the cardsdb from our localhost we are simply mentioning the localhost:3307 because it is exposed by the docker container to the outside world i mean for the host machine.
+  * Cards:
+    * ![img_99.png](images/img_99.png)
+  * Cardsdb:
+    * ![img_100.png](images/img_100.png)
+  * Network:
+    * ![img_101.png](images/img_101.png)
+  * Now observer here we have the cardsdb details here and at the same time if you look at the URL which the cards microservice is using then you will see that it is using the name of the service rather than the hostport because they are all hosted inside the docker env and also inside the same network , because this is how they recognize each other and if in the URL instead of writing the name of the service like cardsdb you write 3307 then it will never be able to connect to the db because now it will think that in it's own local env there must be something at port 3307 which is wrong.
+  * One simply analogy think docker networks like your class room all the students of class X D know each other and their names and they communicate with each other using just their name.
+    * If Ashish of X(D) needs anything from siddhartha of X(D) then he can directly go and ask for it , but if  Ashish of X(D) needs anything from Ashirbad of X(C) then he has to first take permission of the class teacher then upon allowing him he will go to class X(C) a new network and there he will start looking for Ashirbad.
+  * Lets perfom a experiment and check what if i remove the network configurations from the some services and then expect them to work properly:
+  * ![img_102.png](images/img_102.png) 
+  * IF you observer here then all of our DB's are starting inside the same network that goes by the name microdemo .
+  * Now what if i remove this spec and then run the docker compose.
+  * ![img_103.png](images/img_103.png) Well the service is no more extending the service.
+  * Now let me run the compose file:
+  * ![img_104.png](images/img_104.png) See here all the DB they have started but all the microservices got started then they stopped if you check the logs of all of this microservices then you will notice one thing very common.
+  * ![img_105.png](images/img_105.png) They are not able to connect to their DB's , even when all of them are running in the docker env.
+  * Let us execute a command in the terminal ``docker network ls``
+  * ![img_106.png](images/img_106.png) 
+  * So we got the details of all the docker networks that are there inside my docker env.
+  * we have default_default we have default_microdemo etc .
+  * Now let us check the network to which all of our services are connecting themselves.
+  * ``docker ps `` to get all the running containers information.
+  * ![img_107.png](images/img_107.png) 
+  * Let us pick the container id of the 3rd docker container a mysql image that is 68c7c712d819
+  * And try to find more info about it.
+  * Run ``docker inspect container_id``
+  * ![img_108.png](images/img_108.png) 
+    * Well you will get this info here it says the NetworkID as well as the DNSNames and also it says default_default.
+    * ![img_109.png](images/img_109.png) 
+    * ![img_110.png](images/img_110.png)
+    * Compare both the network ID's they are the same .
+    * Now suppose configserver which is connected at the microdemo network lets check its network config.
+    * ![img_111.png](images/img_111.png)
+    * Run ``docker inspect container_id``
+    * ![img_112.png](images/img_112.png)
+    * Now look here at the network name default_microdemo .
+    * Look at the NetworkID.
+    * ![img_113.png](images/img_113.png) 
+    * See here the network ID is same.
+    * So there is a high level of isolation inside docker too if you dont mention the network to which your service will be registered.
+    * IF you dont mention a seperate network then they will never get registred in the default network .
+    * So as can be clearly seen default network and default_microdemo are two seperate networks so the services running inside them cannot communicate properly or as expected.
+    * 
+
+## Docker Network Diagram:
+* ![docker_network.png](images/docker_network.png)
+
+
+### 4th commit: .
+### Commit Message: " Demonstrated the working of docker networks "
+``docker network ls``
+``docker inspect container_id``
