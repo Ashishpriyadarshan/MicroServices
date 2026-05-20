@@ -236,3 +236,52 @@ ___
 
 ### 1st Commit: In the Next lectures we will configure our microservice's and register them as client to this eurekaserver.
 ### Commit Message: "Created EurekaServer | Explained some of it's properties | made a config file for the eurekaserver"
+
+## Registering the microservices at the eurekaserver:
+* Lets start with our Accounts-microservice:
+  * First copy the mvn dependency for the eureka client and paste it in the pom.xml of accounts
+    * ![img_15.png](images/img_15.png)
+    * ![img_16.png](images/img_16.png)
+    * ![img_17.png](images/img_17.png)
+  * Now lets make changes in the code of accounts microservice:
+  * ![img_18.png](images/img_18.png)
+  * In the application.yml we did this.
+  * Well eureka.cleint.fetch-registry: true means fetch the data from the eureka server.
+  * register-with-eureka means register yourself with eureka server.
+  * We have also given it the serverURL so that it has idea with the eureka server or servers are running.
+  * Now what about the last property:
+    * ![img_19.png](images/img_19.png)
+    * prefer-ip-address true means prefer to register the microservice with it's ip address .
+    * Because by default it will register the app with the app name which it will get from spring.app.name .
+    * Think tomorrow if there is a app which needs to talk to accounts then it will try to fetch it's details from the service registry but it will not get the IP , it will only get the app name.
+    * And it is of no use .
+    * We can use the app-name instead of IP too only if the DNS mapping is done then only .
+    * Think of google.com do u write it's IP no right you simply try the DNS name and somehow internally it hits the google IP thats it.
+    * I will explain more about this IP Address and DNS mapping thing with context to eureka server ahead.
+    * Now lets add some more details like info about our microservice which will be shown in the eureka dashaboard:
+    * ![img_20.png](images/img_20.png) 
+    * Well this info related property is actually a part of the actuator dependency , which needs to be exposed as it is not exposed by default.
+    * ![img_21.png](images/img_21.png) 
+    * See here we added the property  , this will expose the info api which will be consumed by the eureka server.
+    * Another thing lets just add some properties which will help using during de-registration of the app from the eureka server.
+      * ![img_22.png](images/img_22.png) 
+      * This endpoint.shutdown.access unrestricted means if there is any shutdown by the app then the eureka will de register the microservice instance from the eureka server.
+      * Well we will add the graceful shutdown at later stages where we will learn more about it so for now lets just leave it here.
+    * Let's start the configserver and eureka and then accounts micro:
+      * As soon as you start the accounts' app:
+        * ![img_24.png](images/img_24.png)
+        * You will see it pulling the configs from configserver.
+        * ![img_25.png](images/img_25.png)
+        * See here it is sending heartbeats to the eureka server and also registering itself and also trying to fetch info about all the apps instances from the eureka server.
+        * The microservice by default will keep sending heartbeat signals to the eureka server every 30 seconds.
+        * ![img_26.png](images/img_26.png)
+        * See here this time in the dashboard of eureka we can see Accounts app instance And if you click on the link below the status part:
+        * ![img_28.png](images/img_28.png)
+        * Observer above that it is using my local IP Address along with the port and then the /actuator/info .
+        * ![img_27.png](images/img_27.png) We are getting the info that we had given in the applications.yml .
+        * BTW the application name is taken from spring.application.name .
+        * And the link under that status is randomly created by eureka server using my PC name etc. i mean the host name is taken from my PC name only.
+
+
+### 2nd Commit: In the Next lectures we will configure our loans and cards microservice and register them as client to this eurekaserver.
+### Commit Message: "Installed Eureka Client dependency to our Accounts microservice | Configured the accounts microservice app | Provided the eureka cleint info and eureka server info | Exposed management end points like info and shutdown"
