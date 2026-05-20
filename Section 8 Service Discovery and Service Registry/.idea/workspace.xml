@@ -8,8 +8,10 @@
       <change beforePath="$PROJECT_DIR$/.idea/compiler.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/compiler.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/README.md" beforeDir="false" afterPath="$PROJECT_DIR$/README.md" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/accounts/pom.xml" beforeDir="false" afterPath="$PROJECT_DIR$/accounts/pom.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/accounts/src/main/resources/application.yml" beforeDir="false" afterPath="$PROJECT_DIR$/accounts/src/main/resources/application.yml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/cards/pom.xml" beforeDir="false" afterPath="$PROJECT_DIR$/cards/pom.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/cards/src/main/resources/application.yml" beforeDir="false" afterPath="$PROJECT_DIR$/cards/src/main/resources/application.yml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/loans/pom.xml" beforeDir="false" afterPath="$PROJECT_DIR$/loans/pom.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/loans/src/main/resources/application.yml" beforeDir="false" afterPath="$PROJECT_DIR$/loans/src/main/resources/application.yml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/../section 2 microservices/.idea/compiler.xml" beforeDir="false" afterPath="$PROJECT_DIR$/../section 2 microservices/.idea/compiler.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/../section 2 microservices/.idea/encodings.xml" beforeDir="false" afterPath="$PROJECT_DIR$/../section 2 microservices/.idea/encodings.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/../section 2 microservices/.idea/misc.xml" beforeDir="false" afterPath="$PROJECT_DIR$/../section 2 microservices/.idea/misc.xml" afterDir="false" />
@@ -59,8 +61,10 @@
   <component name="PropertiesComponent"><![CDATA[{
   "keyToString": {
     "Application.AccountsApplication.executor": "Run",
+    "Application.CardsApplication.executor": "Run",
     "Application.ConfigserverApplication.executor": "Run",
     "Application.EurekaserverApplication.executor": "Run",
+    "Application.LoansApplication.executor": "Run",
     "ModuleVcsDetector.initialDetectionPerformed": "true",
     "RunOnceActivity.ShowReadmeOnStart": "true",
     "RunOnceActivity.TerminalTabsStorage.copyFrom.TerminalArrangementManager.252": "true",
@@ -74,13 +78,26 @@
     "settings.editor.selected.configurable": "com.intellij.platform.ide.impl.presentationAssistant.PresentationAssistantConfigurable"
   }
 }]]></component>
-  <component name="RunManager" selected="Application.AccountsApplication">
+  <component name="RunManager" selected="Application.LoansApplication">
     <configuration name="AccountsApplication" type="Application" factoryName="Application" temporary="true" nameIsGenerated="true">
       <option name="MAIN_CLASS_NAME" value="com.micro.accounts.AccountsApplication" />
       <module name="accounts" />
       <extension name="coverage">
         <pattern>
           <option name="PATTERN" value="com.micro.accounts.*" />
+          <option name="ENABLED" value="true" />
+        </pattern>
+      </extension>
+      <method v="2">
+        <option name="Make" enabled="true" />
+      </method>
+    </configuration>
+    <configuration name="CardsApplication" type="Application" factoryName="Application" temporary="true" nameIsGenerated="true">
+      <option name="MAIN_CLASS_NAME" value="com.micro.cards.CardsApplication" />
+      <module name="cards" />
+      <extension name="coverage">
+        <pattern>
+          <option name="PATTERN" value="com.micro.cards.*" />
           <option name="ENABLED" value="true" />
         </pattern>
       </extension>
@@ -114,6 +131,19 @@
         <option name="Make" enabled="true" />
       </method>
     </configuration>
+    <configuration name="LoansApplication" type="Application" factoryName="Application" temporary="true" nameIsGenerated="true">
+      <option name="MAIN_CLASS_NAME" value="com.micro.loans.LoansApplication" />
+      <module name="loans" />
+      <extension name="coverage">
+        <pattern>
+          <option name="PATTERN" value="com.micro.loans.*" />
+          <option name="ENABLED" value="true" />
+        </pattern>
+      </extension>
+      <method v="2">
+        <option name="Make" enabled="true" />
+      </method>
+    </configuration>
     <configuration default="true" type="JetRunConfigurationType">
       <module name="Section 8 Service Discovery and Service Registry" />
       <method v="2">
@@ -127,6 +157,8 @@
     </configuration>
     <recent_temporary>
       <list>
+        <item itemvalue="Application.LoansApplication" />
+        <item itemvalue="Application.CardsApplication" />
         <item itemvalue="Application.AccountsApplication" />
         <item itemvalue="Application.EurekaserverApplication" />
         <item itemvalue="Application.ConfigserverApplication" />

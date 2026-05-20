@@ -285,3 +285,34 @@ ___
 
 ### 2nd Commit: In the Next lectures we will configure our loans and cards microservice and register them as client to this eurekaserver.
 ### Commit Message: "Installed Eureka Client dependency to our Accounts microservice | Configured the accounts microservice app | Provided the eureka cleint info and eureka server info | Exposed management end points like info and shutdown"
+
+
+### Lets make changes in the Loans and Cards microservice:
+* Loans:
+  * Add the mvn eureka client dependency.
+  * Make changes in the application.yml:
+    * ![img_29.png](images/img_29.png)
+    * ![img_30.png](images/img_30.png)
+* Cards:
+  * Add the mvn client dependency.
+  * Make changes in the application.yml:
+    * ![img_31.png](images/img_31.png)
+    * ![img_32.png](images/img_32.png)
+
+* Now just simply start the applications:
+  * configserver:->eurekaserver:->All 3 microservices:
+  * ![img_33.png](images/img_33.png)
+  * See here this time we are getting all the app instances in the eureka server.
+* There is a endpoint exposed by the eureka where you will get all the info about the registered apps:
+  * localhost:8070/eureka/apps
+    * ![img_34.png](images/img_34.png)
+    * You will get so much information from here like no of instances their IP their name , their health , port etc , everything.
+    * If you want this in the json format then :
+      * Open postman: 
+        * ![img_35.png](images/img_35.png)
+        * Send info with the Accept header.
+        * If you want info related to a specific app like accounts then use:
+          * ``localhost:8070/eureka/apps/accounts``
+
+### 3rd Commit: In the Next lectures we will see how to de-registration works and also how the heartbeats mechanism works.
+### Commit Message: "Installed the eureka client dependency in cards and loans microservice | learned more about the api's exposed by eureka | eureka/apps"
