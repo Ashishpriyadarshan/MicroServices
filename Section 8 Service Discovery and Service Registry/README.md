@@ -316,3 +316,61 @@ ___
 
 ### 3rd Commit: In the Next lectures we will see how to de-registration works and also how the heartbeats mechanism works.
 ### Commit Message: "Installed the eureka client dependency in cards and loans microservice | learned more about the api's exposed by eureka | eureka/apps"
+
+### Service De-Registration and HeartBeats Mechanism:
+* In real prod applications we wont be running the apps in intellij right .
+* I want to say do you think in prod apps you will simply go and press the stop all button .
+* ![img_36.png](images/img_36.png) 
+* The above , no right.
+* So for that reason we have exposed the actuator end-point that is the actuator/shutdown , when you hit this api it will gracefully shutdown your app and then our app will de-register from the eureka.
+* ![img_37.png](images/img_37.png)
+* Lets do see how the apps De-register from the eureka server:
+  * Lets start all the related apps in seq:
+    * configserver->eureka->All apps:
+    * So as usual when our apps start they fetch configs from config server and then they register themselves on the eureka server as per the logs .
+    * Now lets hit the shutdown api for any one of the service instance.
+    * ![img_38.png](images/img_38.png)
+    * Lets hit the actuator/shutdown api for the accounts app.
+    * ![img_39.png](images/img_39.png)
+    * GET is not supported so lets open postman and perform a POST Request at ``localhost:8080/actuator/shutdown``.
+    * ![img_40.png](images/img_40.png)
+    * As soon as we execute this we will see the response and also read the logs and also the dashboard.
+      * Logs:
+        * Accounts: ![img_41.png](images/img_41.png)
+        * Accounts: ![img_42.png](images/img_42.png)
+        * See above it is unregistering itself and then gets completely shutdown
+        * EurekaServer: ![img_43.png](images/img_43.png)
+        * See here the status is DOwn so it is also removing the service instance from it's registry.
+      * Postman: ![img_44.png](images/img_44.png)
+      * Dashboard: ![img_45.png](images/img_45.png)
+* So this is how the de-registration works .
+
+#### Hearbeats Mechanism:
+* By-default every eureka cleint keeps sending heartbeats to the eurekaserver at regular intervals of 30s.
+* So in-order to see that lets just stop the eurekaserver and then you can see in the logs of the client app how it keeps sending heartbeats.
+  * First stop the eureka server then look at the logs of any service that was registered at that eureka server.
+  * Cards:
+    * ![img_46.png](images/img_46.png)
+  * This is the heartbeats mechanism , they need to send to the eurekaserver.
+
+
+
+### Graceful Shutdown:
+* We forgot to mention about graceful shutdown.
+* Well it is not an api-endpoint but a config for the app , that makes the app shutdown gracefully.
+* Which means suppose some processing is going on for some request but all of a sudden the ops team decides to close the app so they will hit some api to close the app.
+* What it does is it will completely stop the app which can cause data inconsistency.
+* So inorder to avoid that if we mention server.shutdown:graceful , it will shutdown only after all the current ongoing requests are processed and meanwhile if a new request comes in then it will not take the request .
+* It's like we have closed taking orders and right now who ever is inside the restaurant and who's order is being prepared once they are served the food the restaurant will close.
+  * This is very important in situations where :
+    * The app is performing some money transfer.
+    * Payment.
+    * Order Booking
+    * File Upload.
+    * DB transaction.
+* Donot get confused between actuator endpoint shutdown and graceful shutdown.
+* graceful shutdown is a way to handle requests while shutting down , where as actuator endpoint is a api to initiate shutdown process.
+
+
+### 4th Commit: In the Next lectures we will understand inter-services communication | FeignClient
+### Commit Message: "Demonstrated De-Registration | Hearbeat Mechanism | Graceful Shutdown "  
