@@ -374,3 +374,91 @@ ___
 
 ### 4th Commit: In the Next lectures we will understand inter-services communication | FeignClient
 ### Commit Message: "Demonstrated De-Registration | Hearbeat Mechanism | Graceful Shutdown "  
+
+
+
+### Interservices communication:
+* How multiple services communicate with each other.
+* In traditional app's REST Template or some web client was used where the dev had to give all the information like IP of the service to which we were trying to connect and had to write down lot and lot of boilerplate code.
+* Every code of how we can connect to a external service it was being coded by the dev .
+* But in spring microservices env we have OpenFeignClient.
+* It is bascially a dependency which has an interface which we can use to directly communicate with other services without having to write lots and lots of code like URL , connection type etc .
+* So inorder to understand communication between two microservices let's create a new REST API and in the way we will understand more and more about the working of feignclient.
+
+
+### New REST Api:
+* Till now we have created individual microservices who have their own DB right and these microservices had their own set of data.
+* Now lets create a API where upon passing the mobile Number we can get the consolidated information of the USER on the basis of their mobile number.
+* Information of accounts , customer , cards and loans.
+* Like till now we had accounts , loans and cards ms.
+* But we never had a ms which could return the data of all the ms combined right .
+  * The basic flow is first create the details in all the DB as per the given mobile Number.
+  * Now create a REST Api such that it takes the mobile Number info from the user and then tries to find the data in the accounts and customer DB and then Loans DB data using the loans ms and then Cards DB data using the cards ms.
+
+
+### Setting Up OpenFeignClient:
+* ![img_47.png](images/img_47.png)
+* Copy the mvn dependency and paste it in the app's where you want to establish communication.
+* Lets copy the dependency into the accounts pom.xml because accounts is the one who needs to discover service's in order to communicate.
+* Now in the main class of accounts add a annotation that is ``@EnableFeignClients`` .
+* ![img_48.png](images/img_48.png)
+* Now once it is done now we will be using it as an interface , it's internal mechanism is same like JPA becuase we use the interface only and mention some details only and rest of the things like implementation and execution is taken care internally.
+* Just go and check the Repository layer do we write any kind of implementation logic or anything no right we just mention some details and thats it the interface takes care internally.
+* We only mention some declarations.
+* OpenFeignClient generates the codes during runtime.
+* Now lets create a feignclient interface:
+  * ![img_49.png](images/img_49.png)
+  * In the service folder create a folder with name client then create a interface inside it with the name CardsFeignClient.
+  * ![img_50.png](images/img_50.png)
+  * Now use the annotation ``@FeignClient("name_of_microservice_instance_which_shows_in_eureka_server_Dashboard"``
+  * ``@FeignClient("Cards")``
+  * Now what function or abstract methods are we supposed to define if we want to communicate with any api exposed by the cards microservice.
+  * Suppose if we want to fetch the details from the cards DB via Cards ms using the fetch method of the cards ms then we will have to use its declartion here as it is.
+  * ![img_51.png](images/img_51.png)
+  * In cards ms we have this REST API which quries the cards DB on the basis of a mobile number and then returns the details to the client.
+  * So will have to invoke this .
+  * So we will simply copy the code from the cards controller and paste it in the feignclient interface .
+  * ![img_52.png](images/img_52.png)
+  * You can keep the name of your feignclient interface whatever you want but make sure the name of the function that you want to connect to should have the same name and signature in you feignclient interface as what is there in its own microservice controller otherwise it will fail .
+  * Like this just paste it but we need to make some corrections here so lets do it.
+    * 1st : the URL of this api is not /fetch , Because if you go and check in the cards controller then you will see that the URL of this api is /api/fetch.
+    * ![img_53.png](images/img_53.png)
+    * So we will have to change the URL in the feignclient too.
+    * From the parameter's we have to remove the @Pattern part because we are just invoking a api of the cards ms.
+    * And the validations will be done in the cards api not by our client accounts app .
+    * Another important thing is the CardsDto which we need to have in the accounts app too because it will be reponsible to handle the incoming data.
+    * So lets create CardsDto same to same in the accounts ms too , take reference from CardsDto of cards ms.
+    * Keep the stucture as same as what is there in the CardsDto of the Cards app.
+    * You can ignore the validation parameters in case of CardsDto for the accounts app , because this time we are not expecting any incoming requests we are just using it to to receive data in CardsDto format from the Cards App.
+    * Before: ![img_54.png](images/img_54.png)
+    * After: ![img_55.png](images/img_55.png)
+    * You can ask why do we need RequestParam why cant we just send the mobile Number as a normal method parameter.
+    * ![img_56.png](images/img_56.png)
+    * It is because when we are sending a request to the /fetch api of the cards app so it will be send as a http web request.
+    * ![img_57.png](images/img_57.png)
+    * See above this is the reason and if you dont mention @RequestParam then the proper http web request might not get formed and even sent.
+    * ![img_58.png](images/img_58.png)
+    * So Now we are done with setting up the FeignClient interface for the Cards , Make sure we have the getter , setter, noArgs and AllArgs for the DTO.
+    * Lets Now create a FeignClient for the Loans as well to fetch the Loans details.
+    * Loans:
+      * ![img_59.png](images/img_59.png)
+      * Inside the service->client folder create a interface LoansFeignClient.
+      * Now lets see which is the API responsible for fetching the Loans details in Loans microservice from the LoansDB .
+      * ![img_60.png](images/img_60.png)
+      * This is the Api responsible for fetching the loans details so let's just copy it and paste it as it is in the LoansFeignClient.
+      * ![img_61.png](images/img_61.png)
+      * Well we only need the declaration so .
+      * ![img_62.png](images/img_62.png)
+      * Now we need to write down some more details like it's api path and then also create the LoansDto.
+      * ![img_63.png](images/img_63.png)
+      * Now lets create the LoansDto.
+      * Simply just copy the dto from the Loans app and paste it in the DTO of the accounts and then just remove the validation parameters.
+      * ![img_64.png](images/img_64.png)
+      * See here we are done with the basic setup.
+      * Now in the Next part we will work on creating the New API which will consolidate all the info.
+
+
+
+
+### 5th Commit: In the next lecture we will create the New Rest Api and see the working of feignclient
+### Commit Message: " Created the FeignClient interfaces for the loans and cards microservice"  

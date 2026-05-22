@@ -9,6 +9,7 @@ import io.swagger.v3.oas.annotations.info.License;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
+import org.springframework.cloud.openfeign.EnableFeignClients;
 import org.springframework.data.jpa.repository.config.EnableJpaAuditing;
 
 //incase your packages are outside or the com.micro.accounts then in that case:
@@ -45,6 +46,7 @@ import org.springframework.data.jpa.repository.config.EnableJpaAuditing;
                         )
         )
 @EnableConfigurationProperties(value = {AccountsContactInfoDto.class})
+@EnableFeignClients
 public class AccountsApplication {
 
 	public static void main(String[] args) {
