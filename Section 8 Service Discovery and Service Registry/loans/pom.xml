@@ -148,7 +148,7 @@
 				<artifactId>spring-boot-maven-plugin</artifactId>
 				<configuration>
                     <image>
-                        <name>captainashish/${project.artifactId}:s6</name>
+                        <name>captainashish/${project.artifactId}:s8</name>
                     </image>
 					<excludes>
 						<exclude>
@@ -167,7 +167,7 @@
                 <configuration>
                     <to>
                         <image>
-                            captainashish/${project.artifactId}:s6
+                            captainashish/${project.artifactId}:s8
                         </image>
                     </to>
                 </configuration>

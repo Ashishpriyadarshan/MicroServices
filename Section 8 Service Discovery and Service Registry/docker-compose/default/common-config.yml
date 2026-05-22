@@ -20,4 +20,5 @@ services:
     environment:
       SPRING_CONFIG_IMPORT: configserver:http://configserver:8071
       SPRING_PROFILES_ACTIVE: default
+      EUREKA_CLIENT_SERVICEURL_DEFAULTZONE: http://eurekaserver:8070/eureka/
 

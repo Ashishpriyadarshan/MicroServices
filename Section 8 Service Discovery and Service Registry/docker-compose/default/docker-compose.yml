@@ -1,5 +1,32 @@
 services:
 
+
+  eurekaserver:
+    image: "captainashish/eurekaserver:s8"
+    container_name: eurekaserver-ms
+    ports:
+      - "8070:8070"
+    depends_on:
+      configserver:
+        condition: service_healthy
+    healthcheck:
+      test: "curl --fail --silent localhost:8070/actuator/health/readiness | grep UP || exit 1"
+      interval: 10s
+      timeout: 5s
+      retries: 10
+      start_period: 30s
+    extends:
+      file: common-config.yml
+      service: microservice-base-config
+    environment:
+      SPRING_APPLICATION_NAME: "eurekaserver"
+      SPRING_CONFIG_IMPORT: configserver:http://configserver:8071
+
+
+
+
+
+
   rabbitmq:
     image: rabbitmq:3.13-management
     hostname: rabbitmq
@@ -20,7 +47,7 @@ services:
 
 
   configserver:
-    image: "captainashish/configserver:s6"
+    image: "captainashish/configserver:s8"
     container_name: "configserver-microservice"
     ports:
       - "8071:8071"
@@ -45,11 +72,13 @@ services:
 
 
   accounts:
-    image: "captainashish/accounts:s6"
+    image: "captainashish/accounts:s8"
     container_name: accounts-microservice
     ports:
       - "8080:8080"
     depends_on:
+      eurekaserver:
+        condition: service_healthy
       configserver:
         condition: service_healthy
     environment:
@@ -65,11 +94,13 @@ services:
 
 
   loans:
-    image: "captainashish/loans:s6"
+    image: "captainashish/loans:s8"
     container_name: loans-microservice
     ports:
       - "8090:8090"
     depends_on:
+      eurekaserver:
+        condition: service_healthy
       configserver:
         condition: service_healthy
     environment:
@@ -84,11 +115,13 @@ services:
 
 
   cards:
-    image: "captainashish/cards:s6"
+    image: "captainashish/cards:s8"
     container_name: cards-microservice
     ports:
       - "9000:9000"
     depends_on:
+      eurekaserver:
+        condition: service_healthy
       configserver:
         condition: service_healthy
     environment:

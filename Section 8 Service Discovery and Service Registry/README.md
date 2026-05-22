@@ -574,5 +574,56 @@ ___
 * Our eurekaserver is also good.
 
 
-### 6th Commit: 
+### 6th Commit: "Generating Docker images and pushing them into the dockerHub and Updating the Docker compose file"
 ### Commit Message: " Demonstrated how services communicate with each other with the help of FeignClient | Created new REST API to return the consolidated data | Created new DTO's | Created a new Service layer interface and also it's implementation "  
+
+### Now we will be creating the docker images and Push them:
+
+* First we will add the mvn plugin for the google jib to our eureka server pom.xml and then give it a name then we will start creating the images.
+* ![img_101.png](images/img_101.png)
+* Now let me change the tag of other microservices pom.xml to s8.
+* Open the terminal at the location where pom.xml is present and run the command ``mvn compile jib:dockerBuild``
+* ![img_102.png](images/img_102.png)
+* We have created all the docker images , next we will update the compose file.
+* Pushing the docker images:
+  * accounts:s8 :
+  * loans:s8:
+  * cards:s8:
+  * configserver:s8:
+  * eurekaserver:s8:
+
+### Docker Compose file:
+* ![img_103.png](images/img_103.png)
+* It dependes on configserver thats why we have mentioned depends_on configserver.
+* We are also doing health check because it's readiness is important for our other microservices since they are dependent on it.
+* Now lets make changes to our microservices:
+  * ![img_104.png](images/img_104.png)
+  * We have to write this condition in all of our microservices .
+  * Then in the common-config file we have to set the env variable which will carry the URL of the eurekaserver so that they can connect properly.
+  * ![img_105.png](images/img_105.png)
+  * This is how the common config file is going to look.
+  * Just make sure you change the tags to s8 of all the services and add teh relevant dependencies at their place.
+  * Also copy the same contents into both prod and qa docker files too.
+
+
+### Validating the Docker Compose file:
+* Open the terminal at the location where docker compose file is present .
+* Run ``docker compose up -d``
+* ![img_106.png](images/img_106.png)
+* Everything worked fine but we got a error that the , eureka server is unhealthy.
+* ![img_107.png](images/img_107.png)
+* Upon inspecting the logs we observed that the eureka server was live but was not ready , it was because it was not able to connect to the configserver .
+* Becuase in the application.yml we had mentioned localhost for the configserver but in docker env we are not specifiying it properly.
+* So it was trying to look inside it's own container where is the configserver and was not able to find it .
+* So lets set the env variable for it.
+* ![img_108.png](images/img_108.png)
+* Now lets run the compose file again and check .
+* ![img_109.png](images/img_109.png)
+* Finally all of our services are on now just check with postman by creating some records and then fetching the records with /api/fetchCustomerDetails.
+* ![img_110.png](images/img_110.png)
+* It is working fine .
+* 
+
+
+### 7th Commit: "In the Upcoming Lectures we will learn about Eureka Self Preservation Mode | Client Side Load Balancing | Multiple Service Registry"
+### Commit Message: " Updated the Docker compose and common-config file | Introduced necessary conditions inside docker compose file"
