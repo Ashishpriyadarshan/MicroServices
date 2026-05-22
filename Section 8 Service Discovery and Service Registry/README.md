@@ -462,3 +462,117 @@ ___
 
 ### 5th Commit: In the next lecture we will create the New Rest Api and see the working of feignclient
 ### Commit Message: " Created the FeignClient interfaces for the loans and cards microservice"  
+
+
+___
+
+## Creating the New REST API:
+* This new REST API which will be inside the accounts app , its task is to take mobileNumber from a user and then query it's own DB and get the records and then .
+* Use the same mobile Number to send requests to the other services like loans and cards and get the data from them also and then consolidate all the data together and send it back to the user.
+* First we will build a DTO that is capable to hold the consolidated information of all the other DTO's.
+* ![img_65.png](images/img_65.png)
+* A DTO that can hold the info of all the 3 DTO's .
+* Lets create the CustomerDetailsDto.
+* ![img_66.png](images/img_66.png)
+* So we have created it.
+* Now lets create the API.
+  * ![img_67.png](images/img_67.png)
+  * ![img_68.png](images/img_68.png)
+  * ![img_69.png](images/img_69.png)
+  * Now lets work on the service layer like we need to create a service that will run the business logic for us.
+  * First lets create a interface of a service.
+  * ![img_70.png](images/img_70.png)
+  * Now lets give some method declarations here.
+  * ![img_71.png](images/img_71.png)
+  * Now lets create a java class in the service->Impl which will implement this interface.
+  * ![img_72.png](images/img_72.png)
+  * ![img_73.png](images/img_73.png)
+    * Now lets start the coding.
+    * First i need to connect with the accounts repository and fetch the details of accounts from the DB.
+    * Then i need to connect with the customer repository and fetch the details of the customer from the same DB.
+    * Then i need to make a call to the fetchLoansDetails function of the LoansFeignClient.
+    * Then i need to make a call to the fetchCardsDetails function of the CardsFeignClient.
+    * So accordingly i will have to set the dependencies.
+    * ![img_74.png](images/img_74.png)
+    * See we have injected the dependencies.
+    * ![img_74.png](images/img_74.png)
+    * We are using here @service annotation and we have also given it a name , because if in future we are creating more and more servie's implementation of the same interface then atleast while injecting we can inject as per the name of the bean.
+    * Well we have injected the dependencies but now we also need to create some mapper logic which will map all the incoming data from different different sources to our CustomeDto.
+    * Let me first write down the business logic and then we will think about the mappers.
+      * First lets fetch the customer details from the DB as per the mobileNumber.
+        * For this either i can use the same logic as what was there in the fetchcustomerdetails of the AccountsServieImpl or i need to inject a new dependency that is the dependency of the AccountsServiceImpl .
+        * But we will simply copy the logic.
+        * ![img_75.png](images/img_75.png)
+        * What we did above is first we fetched the data from the DB using the Customer Entity.
+        * Then we are mapping the Customer object to the CustomerDto object.
+      * Now let me write the same code for the fetching the accounts details as well but this time we will use the CustomerId to fetch the accounts Details.
+        * ![img_76.png](images/img_76.png)
+        * See here first we fetched the customer details using mobile number now we fetched the accounts details using the customerID .
+        * We also mapped the Accounts object data to the AccountsDto object.
+      * Now lets create the logic for fetching the loans and cards details using their FeignClient interface's.
+        * ![img_77.png](images/img_77.png)
+        * Even if we dont use that ResponseEntity still there wont be any issue but we used it so that based on the status of the response we can do some more conditioning.
+        * Now lets map this into the CustomerDetailsDto by simply using getter and setter's.
+        * ![img_78.png](images/img_78.png)
+        * See we created the CustomerDetailsDto object and then we are mapping the values , now we need to map the values of customer and AccountsDto.
+        * But before that we observed a problem that is if you go into CustomerDto then you will see that it is using AccountsDto as one of it's variable.
+        * And now we are using AccountsDto variable along with CustomerDto in the CustomerDetailsDto so it is better if we remove the AccountsDto from the CustomerDetailsVariable and use the CustomerDto variable to set the AccountDto too.
+        * CustomerDetailsDto:
+          * Before: ![img_79.png](images/img_79.png)
+          * After: ![img_80.png](images/img_80.png)
+        * Now we need to make some changes inside our CustomerServiceImpl:
+          * ![img_81.png](images/img_81.png)
+          * We simply used the setter function setCustomerDto this will set both the values of CustomerDto as well as the AccountsDto which is used as a variable inside it.
+    * Now since we are done with setting all the values:
+      * Lets write the return statement and also write the logic in the controller layer.
+      * ![img_82.png](images/img_82.png)
+      * Controller layer:
+        * Before: ![img_83.png](images/img_83.png)
+        * ![img_84.png](images/img_84.png) 
+        * Added the dependency of the service not as service but i added the instance of the interface and wrote the qualifier annotation inside which i gave the name of the service implementation.
+        * ![img_85.png](images/img_85.png)
+        * Took the qualifier name from the CustomerServiceImpl.
+        * Now lets write the logic.
+          * ![img_86.png](images/img_86.png)
+        * So finally we have done the logic writing now our coding part is complete .
+        * Now we will build all our apps and then run them and then check whether all the api's are working fine or not.
+
+### Validating the Rest API's:
+* First build all the apps.
+* Now start all one after another.
+  * configserver.
+  * eurekaserver.
+  * Loans
+  * Cards
+  * Accounts
+  * Now after starting all the apps now in sequence we will be hitting different api's.
+  * API's:
+    * First Api: Accounts 8080/api/create
+      * we wil provide the mobile Number here.
+      * ![img_87.png](images/img_87.png)
+    * Now we will use the same mobile Number to create a record in the loans DB: 8090/api/create?mobileNumber= 9876543210
+      * ![img_88.png](images/img_88.png)
+    * Now using the same mobileNumber we will create a record in the cardsDB : 9000/api/create?mobileNumber = 9876543210
+      * ![img_89.png](images/img_89.png)
+    * So we have created all the data that was needed .
+    * Now we will hit the fetch api's of all our microservices and see whether the value is coming in the desired manner or not.
+
+### Validation Table:
+| Service  | API                                                              | Postman                                                               | DB                                                                      |
+|----------|------------------------------------------------------------------|-----------------------------------------------------------------------|-------------------------------------------------------------------------|
+| Accounts | 8080/api/fetch?mobileNumber=987654321                            | ![img_90.png](images/img_90.png)                                      | ![img_95.png](images/img_95.png) <br/> ![img_96.png](images/img_96.png) |
+| Cards    | 9000/api/fetch?mobileNumber=987654321                            | ![img_91.png](images/img_91.png)                                      | ![img_97.png](images/img_97.png)                                        |
+| Loans    | 8090/api/fetch?mobileNumber=987654321                            | ![img_92.png](images/img_92.png)                                      | ![img_98.png](images/img_98.png)                                        |
+| Accounts | Consolidate customer information (8080/api/fetchCustomerDetails) | ![img_93.png](images/img_93.png)<br/>![img_94.png](images/img_94.png) | Not Needed                                                              |
+
+* So finally everything is working fine as expected we are getting all the consolidated information .
+* There is one small issue that is instead of getting AccountsDto in the json we are getting it but inside customerDto which is expected because of the way we are using it inside the CustomerDetailsDto.
+* We will work on this later and try to make changes to the CustomerDetailsDto .
+* ![img_99.png](images/img_99.png)
+* But overally everything is working fine.
+* ![img_100.png](images/img_100.png)
+* Our eurekaserver is also good.
+
+
+### 6th Commit: 
+### Commit Message: " Demonstrated how services communicate with each other with the help of FeignClient | Created new REST API to return the consolidated data | Created new DTO's | Created a new Service layer interface and also it's implementation "  
