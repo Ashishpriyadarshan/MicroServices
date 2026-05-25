@@ -8,6 +8,9 @@
       <change beforePath="$PROJECT_DIR$/../Section 8 Service Discovery and Service Registry/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/../Section 8 Service Discovery and Service Registry/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/../Section 8 Service Discovery and Service Registry/docker-compose/prod/docker-compose.yml" beforeDir="false" afterPath="$PROJECT_DIR$/../Section 8 Service Discovery and Service Registry/docker-compose/prod/docker-compose.yml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/../Section 8 Service Discovery and Service Registry/docker-compose/qa/docker-compose.yml" beforeDir="false" afterPath="$PROJECT_DIR$/../Section 8 Service Discovery and Service Registry/docker-compose/qa/docker-compose.yml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/README.md" beforeDir="false" afterPath="$PROJECT_DIR$/README.md" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/gatewayserver/src/main/resources/application.yml" beforeDir="false" afterPath="$PROJECT_DIR$/gatewayserver/src/main/resources/application.yml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/../section 2 microservices/.idea/compiler.xml" beforeDir="false" afterPath="$PROJECT_DIR$/../section 2 microservices/.idea/compiler.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/../section 2 microservices/.idea/encodings.xml" beforeDir="false" afterPath="$PROJECT_DIR$/../section 2 microservices/.idea/encodings.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/../section 2 microservices/.idea/misc.xml" beforeDir="false" afterPath="$PROJECT_DIR$/../section 2 microservices/.idea/misc.xml" afterDir="false" />
@@ -60,6 +63,7 @@
     &quot;Application.LoansApplication.executor&quot;: &quot;Run&quot;,
     &quot;ModuleVcsDetector.initialDetectionPerformed&quot;: &quot;true&quot;,
     &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.TerminalTabsStorage.copyFrom.TerminalArrangementManager.252&quot;: &quot;true&quot;,
     &quot;RunOnceActivity.git.unshallow&quot;: &quot;true&quot;,
     &quot;git-widget-placeholder&quot;: &quot;main&quot;,
     &quot;kotlin-language-version-configured&quot;: &quot;true&quot;,

@@ -248,3 +248,23 @@ ___
 
 ### 1st Commit: In the upcoming lectures we will learn more about manual routing .
 ### Commit Message: "Gateway Server | Explained the Internal Architect of Spring CLoud Gateway | Netty Server| Demonstrated creation and working of Gateway Server"
+
+### Accepting Service names with lowercase letters:
+* Till now whatever URL we are trying to access we are using block letters for the service name like:
+* ``localhost:8072/ACCOUNTS/api/fetch?mobileNumber=9876543210``
+*  ``localhost:8072/LOANS/api/fetch?mobileNumber=9876543210``
+*  ``localhost:8072/CARDS/api/fetch?mobileNumber=9876543210``
+* This looks really bad and do you want your client applications to send the request to a URL like this .
+* I mean this is the ideal behaviour of the gateway server but we can overcome this .
+* By using a property inside the application.yml that is : lower-case-service-id
+* ![img_21.png](images/img_21.png)
+* Now try to hit the URL with both Uppercase as well as lower case .
+  * UpperCase: ![img_22.png](images/img_22.png)
+  * lowerCase: ![img_23.png](images/img_23.png)
+  * See how the lowercase is working fine.
+* Lets check the /actuator/gateway/routes to see how it forms the URL for incoming lowercase http requests:
+* ![img_24.png](images/img_24.png) 
+* See how the lowercase letter service name are showing up here.
+
+### 2nd Commit: In the Upcoming lectures we will learn more about manual routing.
+### Commit Message: "Made changes in the application.yml to accept lowercase letters in the URL"
