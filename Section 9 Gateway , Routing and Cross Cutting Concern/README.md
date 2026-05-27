@@ -268,3 +268,41 @@ ___
 
 ### 2nd Commit: In the Upcoming lectures we will learn more about manual routing.
 ### Commit Message: "Made changes in the application.yml to accept lowercase letters in the URL"
+
+## Manually Routing the requests:
+* There are two ways in which we can manually route the incoming http requests.
+* One of them is writing the configs inside the application.yml which you might have seen in most of the images attached above in this lecture.
+* The 2nd one is creating bean of RouteLocator and giving all the required information inside it.
+* The 2nd one is used widely by developers as it gives more flexibility to introduce more custom predicates and filters.
+  * ### Steps to create Routing inside the bean of RouteLocator:
+    * First create a folder config.
+    * Inside the config folder create a class GatewayConfig: or whatever name you want.
+    * Now give it the annotation of @Configuration and then create a function whose return type is going to be RouterLocator.
+    * ![img_25.png](images/img_25.png)
+    * Now lets create some routes inside the function:
+    * ![img_26.png](images/img_26.png)
+    * See the above image this is how we create different routes , the fashion in which we are writing the code here looks pretty similiar to create custom security configs.
+    * Now let me explain each and every line :
+      * ![A Custom Routing.png](images/A%20Custom%20Routing.png)
+      * The details about each and every line has been explained clearly.
+      * ![img_27.png](images/img_27.png)
+      * Here the route->route.path is not same as the .route() above because inside we are using a lambda function and we can use r or anything else instead of that route->route.path.
+      * Lets see how are our URL's getting exposed in the actuator/gateway/routes .
+      * ![img_28.png](images/img_28.png)
+      * ![img_29.png](images/img_29.png)
+      * This is how the /gateway/routes looks now but if you observer one thing then even after mentioning our custom route still we are getting the auto configured routes by gateway server.
+      * for example:
+        * ![img_30.png](images/img_30.png)
+        * Even if a client wants then they can still hit the localhost:8072/accounts/** and still they would get redirected to the actual instance of ACCOUNTS.
+      * It is happening because we have set a property true that is :
+        * ![img_31.png](images/img_31.png)
+        * Change the value here from true to false then again run the edge server.
+        * ![img_32.png](images/img_32.png)
+      * Now lets hit localhost:8072/gateway/routes :
+        * ![img_33.png](images/img_33.png)
+        * See no more autoconfigured routes.
+
+
+
+### 3rd Commit: In the Upcoming lectures we will see how we can have some custom filters added.
+### Commit Message: "Created Custom Routes using RouteLocator"
