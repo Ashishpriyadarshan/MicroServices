@@ -306,3 +306,22 @@ ___
 
 ### 3rd Commit: In the Upcoming lectures we will see how we can have some custom filters added.
 ### Commit Message: "Created Custom Routes using RouteLocator"
+
+### Adding Response Header filter to the route:
+* For this just go through the official documentation and look for adding response header filter.
+* ![img_34.png](images/img_34.png)
+* Well this is the yml config one .
+* But we need the java dsl one right .
+* So for that lets work on our current code.
+* ![img_35.png](images/img_35.png)
+* Well this is how you add multiple filters like 
+* ``.filters(f->f.firstfilter().secondfilter().thirdfilter().andso on)``
+* We have used the AddResponseHeader filter here to send a header value in the http response like we are going to send the Current LocalTime.
+* Replicate the same to other routes too.
+* Now start the edge server and use postman to send some request and then observe the incoming request .
+  * ![img_36.png](images/img_36.png)
+  * ![img_37.png](images/img_37.png)
+  * In response select headers and see the added filter that we are getting as a response.
+
+### 4th Commit: In the Upcoming lectures we will see how we can have some custom filters added.
+### Commit Message: "Demonstrated how to add a response header filter"

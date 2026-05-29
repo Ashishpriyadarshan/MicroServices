@@ -5,6 +5,8 @@ import org.springframework.cloud.gateway.route.builder.RouteLocatorBuilder;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
+import java.time.LocalDateTime;
+
 @Configuration
 public class GatewayConfig {
 
@@ -18,21 +20,24 @@ public class GatewayConfig {
                 .route("accounts_route",
                         route->route.path("/microdemo/accounts/**")
                                 .filters(f -> f.rewritePath("/microdemo/accounts/(?<segment>.*)",
-                                        "/${segment}"))
+                                        "/${segment}")
+                                        .addResponseHeader("X-Response-Time", LocalDateTime.now().toString()))
                                 .uri("lb://ACCOUNTS"))
 
                 //Loans service Routing
                 .route("loans_route",
                 route -> route.path("/microdemo/loans/**")
                         .filters(f -> f.rewritePath("/microdemo/loans/(?<segment>.*)",
-                                "/${segment}"))
+                                "/${segment}")
+                                .addResponseHeader("X-Response-Time",LocalDateTime.now().toString()))
                         .uri("lb://LOANS"))
 
                 //Cards Service Routing
                 .route("cards_route",
                         route -> route.path("/microdemo/cards/**")
                                 .filters(f -> f.rewritePath("/microdemo/cards/(?<segment>.*)",
-                                        "/${segment}"))
+                                        "/${segment}")
+                                        .addResponseHeader("X-Response-Header",LocalDateTime.now().toString()))
                                 .uri("lb://CARDS"))
 
                 .build();

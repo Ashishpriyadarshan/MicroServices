@@ -10,6 +10,7 @@
       <change beforePath="$PROJECT_DIR$/../Section 8 Service Discovery and Service Registry/docker-compose/qa/docker-compose.yml" beforeDir="false" afterPath="$PROJECT_DIR$/../Section 8 Service Discovery and Service Registry/docker-compose/qa/docker-compose.yml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/README.md" beforeDir="false" afterPath="$PROJECT_DIR$/README.md" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/gatewayserver/src/main/java/com/micro/gatewayserver/config/GatewayConfig.java" beforeDir="false" afterPath="$PROJECT_DIR$/gatewayserver/src/main/java/com/micro/gatewayserver/config/GatewayConfig.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/../section 2 microservices/.idea/compiler.xml" beforeDir="false" afterPath="$PROJECT_DIR$/../section 2 microservices/.idea/compiler.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/../section 2 microservices/.idea/encodings.xml" beforeDir="false" afterPath="$PROJECT_DIR$/../section 2 microservices/.idea/encodings.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/../section 2 microservices/.idea/misc.xml" beforeDir="false" afterPath="$PROJECT_DIR$/../section 2 microservices/.idea/misc.xml" afterDir="false" />
@@ -85,7 +86,7 @@
       <recent name="D:\Coding Lectures\microservices\Section 9 Gateway , Routing and Cross Cutting Concern\images" />
     </key>
   </component>
-  <component name="RunManager" selected="Application.AccountsApplication">
+  <component name="RunManager" selected="Application.GatewayserverApplication">
     <configuration name="AccountsApplication" type="Application" factoryName="Application" temporary="true" nameIsGenerated="true">
       <option name="MAIN_CLASS_NAME" value="com.micro.accounts.AccountsApplication" />
       <module name="accounts" />
