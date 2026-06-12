@@ -14,6 +14,8 @@ import com.micro.accounts.service.client.CardsFeignClient;
 import com.micro.accounts.service.client.LoansFeignClient;
 import lombok.NoArgsConstructor;
 import lombok.RequiredArgsConstructor;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
@@ -34,7 +36,7 @@ public class CustomerServiceImpl implements ICustomerService {
      * This function will use the feignclient interfaces for loans and cards microservice to contact them and get the data.
      */
     @Override
-    public CustomerDetailsDto fetchCustomerDetails(String mobileNumber) {
+    public CustomerDetailsDto fetchCustomerDetails(String mobileNumber , String correlationId) {
 
 
         Customer customer = customerRepository.findByMobileNumber(mobileNumber).orElseThrow(
@@ -47,8 +49,8 @@ public class CustomerServiceImpl implements ICustomerService {
 
         customerDto.setAccountsDto(AccountsMapper.mapToAccountsDto(accounts,new AccountsDto()));
 
-        ResponseEntity<LoansDto> loansDtoResponseEntity = loansFeignClient.fetchLoanDetails(mobileNumber);
-        ResponseEntity<CardsDto> cardsDtoResponseEntity = cardsFeignClient.fetchCard(mobileNumber);
+        ResponseEntity<LoansDto> loansDtoResponseEntity = loansFeignClient.fetchLoanDetails(mobileNumber, correlationId);
+        ResponseEntity<CardsDto> cardsDtoResponseEntity = cardsFeignClient.fetchCard(mobileNumber, correlationId);
 
 
         CustomerDetailsDto customerDetailsDto = new CustomerDetailsDto();
@@ -56,6 +58,9 @@ public class CustomerServiceImpl implements ICustomerService {
         customerDetailsDto.setCardsDto(cardsDtoResponseEntity.getBody());
 
         customerDetailsDto.setCustomerDto(customerDto);
+
+        //print the logger statement:
+
 
         return customerDetailsDto;
     }

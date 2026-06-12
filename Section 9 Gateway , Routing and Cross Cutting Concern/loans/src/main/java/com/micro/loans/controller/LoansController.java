@@ -17,6 +17,8 @@ import jakarta.validation.constraints.Pattern;
 import lombok.AllArgsConstructor;
 import lombok.RequiredArgsConstructor;
 import org.hibernate.sql.Update;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
@@ -38,6 +40,7 @@ public class LoansController {
 
 
 
+    private static final Logger logger = LoggerFactory.getLogger(LoansController.class);
 
     @Qualifier(value = "LoansServiceImplV1")
     private final ILoansService iLoansService;
@@ -110,9 +113,11 @@ public class LoansController {
             )
     public ResponseEntity<LoansDto> fetchLoanDetails(@RequestParam
                                                          @Pattern(regexp = "(^$|[0-9]{10})",message = "Mobile Number must be 10 digits")
-                                                         String mobileNumber)
+                                                         String mobileNumber,
+                                                     @RequestHeader("microdemo-correlation-id") String correlationId)
     {
 
+        logger.debug("microdemo-correlation-id found: {}",correlationId);
         LoansDto loansDto = new LoansDto();
         loansDto = iLoansService.fetchLoan(mobileNumber);
 

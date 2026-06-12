@@ -452,3 +452,77 @@ ___
 
 ### 5th Commit: Making Code Changes inside the Microservices :
 ### Commit Message: "Created two custom GlobalFilter | RequestTraceFilter| ResponseTraceFilter | Explained their codes and their working"
+
+### Making Changes in at the microservice level to print the CORRELATIONID Header:
+* If you remember we had a Controller/API in the Accounts microservice which returned us the consolidated information of all the other microservices.
+* ![img_53.png](images/img_53.png)
+* The above API in the CustomerController.java class .
+* Now in the same API lets include a parameter in the parameter list which will capture the Header from the http request.
+* ![img_54.png](images/img_54.png)
+* See above we have added the new parameter . 
+* We added that because when gateway server sends the request to the microservice it sends a http request only and inside spring web mvc to capture the Header we have to use the @RequestHeader annotation.
+* Now lets track which are the functions it calls and accordingly we will make changes.
+* ![img_55.png](images/img_55.png)
+* It brings us to the CustomerServiceImpl.java class where the actual processing takes place.
+* Here we will do multiple things like change the parameter list of the fetchCustomerDetails function and add the header received at the controller layer so that we can print that here.
+* ![img_56.png](images/img_56.png) 
+* First i made changes at the caller function or controller function it is showing error as in the fetchCustomerDetails function's declaration only 1 parameter is there so we need to modify the parameter of this function too.
+* ![img_57.png](images/img_57.png)
+* I added it here in the parameter list still it is showing error as in the interface we dont have the function looking like this.
+* ![img_58.png](images/img_58.png)
+* See here we only have 1 parameter so lets add one more.
+* ![img_59.png](images/img_59.png)
+* Now the error is no more there.
+* Let me first add the Logger to the Controller class CustomerController.java.
+* ![img_61.png](images/img_61.png)
+* Now lets print the debug statement:
+* ![img_62.png](images/img_62.png)
+* Now since we wanted the same correlationId to be there in other microservices so for that we had also changed the method signature of the fetchCustomerDetails function because this is the function inside which we are making the calls to other microservices.
+* ![img_63.png](images/img_63.png)
+* Here along with the mobile Number we have to send the correlationId too.
+* ![img_64.png](images/img_64.png)
+* See as soon as we added the correlationID string it shows error , so lets make changes in the feignclient interface.
+* ![img_65.png](images/img_65.png)
+* At this point we are just sending the mobile Number to the fetchLoansDetails function of the Loans Microservice .
+* But now we will send the correlationID not as a normal String variable but as a RequestHeader so for this.
+* ![img_66.png](images/img_66.png)
+* Do the same thing in the other feignclient too , the cards microservice one.
+* ![img_67.png](images/img_67.png)
+* Now inorder for the respective api's of the Loans and Cards microservice to extract the Header details and print it , we have to make changes in the actual microservices too.
+* ### You may ask me why do we have to send the correlationId again to the other microservices that too as RequestHeader.
+  * It is because from gateway the correlationId is set and is sent in the http request to the first microservice and the first microservice extracts it .
+  * Now when the first microservice makes calls to other microservices i uses new http requests which are created via the feign client and the feign client uses the service discovery not the gateway server.
+  * So new http request won't be having the same Exchange request correlationId so it is us who has to set the correlationId and the ID passess to other microservices like that.
+  * And when we are using @RequestHeader even while calling the function of other microservice's so in the outgoing http request a new header is added with name given by us and value sent by us.
+* Now lets make changes in the Loans microservice:
+* ![img_68.png](images/img_68.png)
+* Made changes in the fetchLoanDetails function of the LoansController as well as add the logger in the class too.
+* ![img_69.png](images/img_69.png)
+* Now make the same type of changes to the fetchCard function of the CardsController class of the Cards microservice.
+* ![img_70.png](images/img_70.png)
+* See we have made the similiar changes here too.
+* Also make sure you have enabled the logging in the application.yml of the different microservices.
+* Now lets start the apps one by one in sequence : configserver -> Service Discovery -> Loans -> Cards -> Accounts -> GatewayServer :
+* Now once all of the apps are live :
+  * Try to create some records using the api's and then finally we will hit the consolidated api which is the fetchCustomerDetails api and read the logs of the respective apps to check the correlationId.
+  * 1st : /api/create of the AccountsController of the Accounts microservice using the Ip of the gateway or we can use the normal IP of the accounts app , but while fetching hit the microservice via gateway otherwise no correlationId.
+    * ![img_71.png](images/img_71.png)
+    * See the URL properly .
+    * Now using the same mobile Number create records inside the cards and loans microservice : 
+  * 2nd: microdemo/loans/create :
+    * ![img_72.png](images/img_72.png)
+  * 3rd: microdemo/cards/create:
+    * ![img_73.png](images/img_73.png)
+  * Now since all the records are created , Now hit the microdemo/accounts/api/fetchCustomerDetails:
+    * ![img_74.png](images/img_74.png)
+    * Hit the above api and then check the logs of all the microservices: 
+        * GatewayServer Logs: ![img_78.png](images/img_78.png)
+        * Accounts Logs: ![img_75.png](images/img_75.png)
+        * Loans Logs: ![img_76.png](images/img_76.png)
+        * Cards Logs: ![img_77.png](images/img_77.png)
+        * Postman Response Headers: ![img_79.png](images/img_79.png)
+      * See all the correlationId values are same and matching .
+      * The gateway server first adds the correlationId and then in the response also it adds it back .
+
+### 6th Commit: In the Next lecture we will learn about different types of Gateway Server Design Patterns :
+### Commit Message: "Made code changes in the microservices | Demonstrated how correlationID is generated and how it is carried forward in request header as well as response Header | Made changes to the functions parameter lists | Made changes at feignclient level too"

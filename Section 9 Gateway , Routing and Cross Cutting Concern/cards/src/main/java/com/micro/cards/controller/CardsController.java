@@ -17,6 +17,8 @@ import jakarta.validation.Valid;
 import jakarta.validation.constraints.Pattern;
 import lombok.RequiredArgsConstructor;
 import lombok.ToString;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
@@ -37,6 +39,8 @@ import org.springframework.web.bind.annotation.*;
         description =" CRUD RestApi's of cards microservices for creating/fetching/updating/deleting the records"
 )
 public class CardsController {
+
+    private static final Logger logger = LoggerFactory.getLogger(CardsController.class);
 
     @Qualifier("CardsServiceImplV1")
     private final ICardsService iCardsService;
@@ -107,9 +111,12 @@ public class CardsController {
     @GetMapping("/fetch")
     public ResponseEntity<CardsDto> fetchCard(@RequestParam
                                                   @Pattern(regexp ="[0-9]{10}",message = "Mobile number must be 10 digits long")
-                                                   String mobileNumber)
+                                                   String mobileNumber,
+                                              @RequestHeader("microdemo-correlation-id") String correlationId)
     {
 
+
+        logger.debug("microdemo-correlation-id found : {}", correlationId);
         CardsDto cardsDto =  iCardsService.fetchCardDetails(mobileNumber);
 
         return ResponseEntity.

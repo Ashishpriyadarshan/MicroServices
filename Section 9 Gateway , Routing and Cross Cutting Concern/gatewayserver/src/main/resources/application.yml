@@ -29,3 +29,10 @@ info:
     name: "gatewayserver"
     description: "micro demo gateway server"
     version: "1.0.0"
+
+
+logging:
+  level:
+    com:
+      micro:
+        gatewayserver: DEBUG

@@ -20,12 +20,12 @@ spring:
     active: "prod"
   config:
     import: "optional:configserver:http://localhost:8071/"
-
-  rabbitmq:
-    host: "localhost"
-    port: 5672
-    username: "guest"
-    password: "guest"
+#
+#  rabbitmq:
+#    host: "localhost"
+#    port: 5672
+#    username: "guest"
+#    password: "guest"
 
 
 management:
@@ -54,3 +54,9 @@ info:
     name: "Cards"
     description: "micro Cards application"
     version: "1.0.0"
+
+logging:
+  level:
+    com:
+      micro:
+        cards: DEBUG

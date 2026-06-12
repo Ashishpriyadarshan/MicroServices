@@ -20,11 +20,11 @@ spring:
     import: "optional:configserver:http://localhost:8071/"
   profiles:
     active: "prod"
-  rabbitmq:
-    host: "localhost"
-    port: 5672
-    username: "guest"
-    password: "guest"
+#  rabbitmq:
+#    host: "localhost"
+#    port: 5672
+#    username: "guest"
+#    password: "guest"
 
 
 management:
@@ -55,3 +55,9 @@ info:
     name: "Loans"
     description: "micro loans application"
     version: "1.0.0"
+
+logging:
+  level:
+    com:
+      micro:
+        loans: DEBUG
