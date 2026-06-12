@@ -325,3 +325,130 @@ ___
 
 ### 4th Commit: In the Upcoming lectures we will see how we can have some custom filters added.
 ### Commit Message: "Demonstrated how to add a response header filter"
+
+
+### Implement some cross cutting concerns :
+* Lets try to implement some cross cutting concers which are very useful.
+* If you go to chatgpt or any other AI and ask what are the custom cross cutting concerns which we can add to our server gateway then it will give you a list along with why you need to do that.
+* One of the cross cutting concerns is logging and tracing .
+* It is very important because we can analyze how the requests are getting transfered from one service to another service and we can also see the time like how long is a server taking to send the request ahead or maybe forward.
+* And inorder to trace any http request let us use the CorrelationID , bascially it is defined by us only but the term we use to call it is correlationID.
+* It is either the task of the FrontEnd client to add the CorrelationID which will be carried along with request to all the places wherever the request goes or simply it can be added by the BE Gateway also.
+* It's simple task is to trace the request only like suppose Client sends a request it goes to the gateway now at the gateway we check whether this request has a header correlationID or not if not then we simply add it to the request and then the gateway forwards it to wherever it want the request to go ,
+* Now suppose gateway forwards the request to accounts-ms we can see a request recieved by the accounts-ms in its log with the same correlationID then suppose accounts-ms sends it to the loans-ms there also we can see the correlationID and then finally after much processing the request gets back to gateway and from there it goes to the client again there at client we can see the same correlationID so this is how we do tracing and this is how we can do the analysis.
+* If you want to know how to add this global filter , it is a global filter as we are going to add this filter to all the incoming and outgoing requests.
+* Go to chatgpt and ask how can i manually add global Filter like correlationID to all the incoming requests and outgoing response's in my spring cloud reactive gateway server.
+* One more important thing is using this correlationID we can actually debug the code like where the exception is happening like who is recieving the request and who is not.
+* Lets start creating the filters:
+  * First create package by the name filters.
+  * ![img_38.png](images/img_38.png)
+  * We will see today 3 ways in which we can have global filters.
+  * Lets first create a utility class , this class object will be used by our custom defined globalfilter , I mean it will act as a helper class only.
+  * FilterUtility:
+    * ![img_39.png](images/img_39.png)
+    * As you can see the attached image above , It has 3 funtions which are publicly accessible.
+    * The first function get coorelation_ID:
+      * ![img_40.png](images/img_40.png)
+      * The purpose of this function is to take a parameter of type HttpHeaders and using that it will look for all the headers present in that list.
+      * It will search for a header who's name is microdemo-correlation-id if it is present then it will put all it's values into a list of strings.
+      * Like the microdemo-correlation-id Header can have mutliple values so it will do that and it will only consider the first value of the list.
+      * And then it will return the first value to the function caller.
+      * Incase there is no such Header then it will return NULL to the caller.
+      * Here we are using the string variable CORRELATION_ID inorder to carry the string microdemo-correlation-id.
+      * 
+    * Now we have two other functions which are dependent on each other.
+      * ![img_41.png](images/img_41.png)
+      * If you see here then bottom function setCorrelationId is called first by any other class function and the function carries some values like the correlationID and the exchange.
+      * Basically who ever calls this function has to pass 2 things:
+        * ServerWebExchange object : This object is responsible to carry the details of any incoming requests to the gateway server.
+        * String object: It will be carrying a random system generated code which will used to initialize the value of the correlation_id.
+        * Now once this function is called it will return a value which is returned by the function that it is calling and the function it is calling is the setRequestHeader.
+      * ![img_41.png](images/img_41.png)
+      * Now the setCorrelationID calls the setRequestHeader function by passing 3 things first one is the ServerWebExchange object .
+      * 2nd is the String variable CORRELATION_ID which carries value "microdemo-correlation-id".
+      * 3rd one is the random generated code.
+      * Now in the setRequestHeader function the ServerWebExchange object is mutated which means modified , 
+      * ![img_42.png](images/img_42.png) it is mutated and a new object of type ServerWebExchange is generated and returned back to the caller.
+      * The caller is the setCorrelationID and then the function setCorrelationID returns the newly generated object to its caller.
+      * Remeber one thing here we are not at all manipulating the actual incoming http request we are passing its copy and working on it and then mutating it without affecting the original one.
+      * Once the new object is created it will replace the original one , which we will see ahead.
+      * ![Mutating_ServerWebExchangeRequests.png](images/Mutating_ServerWebExchangeRequests.png)
+      * See the above image for more understanding.
+    * We have created the utility class now lets actually create the GlobalFilter for adding the correlation_ID.
+    * RequestTraceFilter class: 
+      * This class is reponsible to create a bean that implements the GlobalFilter which will add a correlationID to the incoming http requests based on some conditions.
+      * ![img_43.png](images/img_43.png)
+      * Like if you see here in the above image then, it is injecting the utility class bean as it is dependent on it.
+      * Now the function public Mono<Void> Filter it's declaration is there in the GlobalFilter interface.
+      * It uses two parameters one is the ServerWebExchange which captures the incoming web request and other one is the GatewayFilterChain .
+      * ServerWebExchange handles the incoming http request while GatewayFilterChain object actually helps in passing the control or execution to the next filter.
+      * Bascially here in the RequestTraceFilter class inside that Mono<Void> filter function we are performing some filterations on the incoming request now after all the tasks are performed, Now it is time for the same function to send the control or execution to the next filter.
+      * That is why we are using return chain.filter(exchange) . If you dont use this at the end then our request wont move ahead.
+      * We are not using the GlobalFilterChain object to add a filter rather it is used to move to the next default/user-defined filter.
+      * When we are implementing the GlobalFilter interface that is the moment we are telling the gateway server that this class has some filters and the Order(1) annotation says that in the list of GlobalFilters please make this class as the first filter through which the code will travel.
+      * Explaining the code: 
+        * First the http request comes to the exchange and from there we are taking out all the http headers using : HttpHeaders requestHeaders = exchange.getRequest().getHeaders();
+        * exchange.getRequest() : This gets the current http request.
+        * exchange.getRequest().getHeaders() : This brings out all the headers and assigns them to the HttpHeaders requestHeaders object.
+        * ![img_44.png](images/img_44.png)
+        * Now the if part is executed to check whether it has the correlation_ID in it already or not.
+        * ![img_45.png](images/img_45.png)
+        * For that the above function is invoked.
+        * And the above function calls the getCorrelationID function of the FilterUtility class.
+        * ![img_46.png](images/img_46.png)
+        * The above one.
+        * If there is not correlationID then it returns NULL otherwise it logs the correlationID if present.
+        * Then the below part of the RequestTraceFilter class is executed if it gets NULL in response:
+        * ![img_47.png](images/img_47.png)
+        * The above part , like creation of CORRELATIONID and assigning it to the request.
+        * First a random string is generated then the same random string is passed as a argument to the setCorrelationId function of the filterUtility.
+        * And as we have already mentioned what the function does still let me show it again.
+        * ![img_48.png](images/img_48.png)
+        * The setCorrelationID function calls the setRequestHeader function where first a new ServerWebExchange object is created with the new header that is microdemo-correlation-id along with the existing details of the exchange.
+        * Once the new ServerWebExhange object is created it is assigned to the original ServerWebExchange object and then it simply returns to the caller.
+        * Since the ServerWebExchange object is immutable in nature so we cannot directly change it but we can copy it and create new manipulated copies of it and then assign it to the original one.
+        * Now once the request is mutated.
+        * ![img_49.png](images/img_49.png) 
+        * See here exchange = filterUtility.setCorrelationId(exchange,correlationID) , how the original ServerWebExchange object is getting assinged with the new one.
+        * Then the logger is getting executed.
+        * finally return chain.filter(exchange) : This tells the gatewayserver that now i have done all the work inside this filter now you can take the request ahead and forward it to other filters thats it.
+    * ### Image Demostration of the Mono<Void> filter function:
+      * ![MonoVoid.png](images/MonoVoid.png)
+      * The Gateway uses this kind of coding since it is build using reactive framework and not the usual spring framework that's why you will see a lot of Mono<Void> , Mono<String> , Mono<T> etc.
+      * Mono bascially means not now but maybe later in the future you are expected to hv a return type of <>,
+      * Mono<String> name = Mono.just("Ashish").
+      * ![img_50.png](images/img_50.png)
+  * ### Adding the CorrelationID in the ReponseHeader:
+    * Well you may ask me that we just added the correlationID in the requestHeader then why we need it in the ResponseHeader, Like can the client not see the correlationID from the requestHeader ?
+    * Well RequestHeader and ResponseHeader are two different things.
+    * When the client sends a http in that request we add the request header.
+    * And when the same request is processed and the client is about to recieve the response so we add the responseHeader.
+    * Lets create a class that will add the ReponseHeader.
+    * ![img_51.png](images/img_51.png)
+    * See the above image this is how we can crate a responseHeader filter , there are other easier ways too to create the same.
+    * Code Explanation:
+      * Configuration Annotation means this class has beans .
+      * Then we have the bean annotation on top of a function which returns a bean of type GlobalFilter .
+      * In the return statement we are using the lambda expression .
+      * where just like RequestTraceFilter class here also we are taking two parameters .
+      * ServerWebExchange obj and GlobalFilterChain object.
+      * ![img_52.png](images/img_52.png)
+      * return chain.filter(exchange).then this is important as we had also seen chain.filter(exchange) in the return statement of the RequestTraceFilter class too.
+      * .then bascially tells the gateway server to only execute the current statements after all the processing is done and after all the response is finally recieved and the response is ready to be directed back to the client.
+      * if you dont use .then , then instead of properly adding the response header it might actually add it like a normal reponseHeader and expect that right now this is not a response but a request which will be forwarded to the next filter .
+      * So please add .then .
+      * Now after this what we are doing is from the current exhange request we are looking for all the headers , specifically the requestheaders and looking for the correlationID header.
+      * Once we get that from there we are going to use the same correlationID value in the reponseHeader too and then finally the response will be sent back to the client.
+      * Since all the requests go through our order(1) RequestTraceFilter so all of them have the CorrelationID so from requestHeaders we can get the correlationId and use it in the ResponseHeader that's it.
+      * exchange.getResponse().getHeaders().add(FilterUtility.CORRELATION_ID, correlationId) : This part is actually adding the response header.
+      * Code Explanation in better way:
+        * ![Better way of ResponseTraceFilter.png](images/Better%20way%20of%20ResponseTraceFilter.png)
+      
+### Why do we need both the filters :
+* ![Both RequestFilter and ResponseFilter.png](images/Both%20RequestFilter%20and%20ResponseFilter.png)
+
+___
+
+
+### 5th Commit: Making Code Changes inside the Microservices :
+### Commit Message: "Created two custom GlobalFilter | RequestTraceFilter| ResponseTraceFilter | Explained their codes and their working"

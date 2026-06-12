@@ -10,7 +10,6 @@
       <change beforePath="$PROJECT_DIR$/../Section 8 Service Discovery and Service Registry/docker-compose/qa/docker-compose.yml" beforeDir="false" afterPath="$PROJECT_DIR$/../Section 8 Service Discovery and Service Registry/docker-compose/qa/docker-compose.yml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/README.md" beforeDir="false" afterPath="$PROJECT_DIR$/README.md" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/gatewayserver/src/main/java/com/micro/gatewayserver/config/GatewayConfig.java" beforeDir="false" afterPath="$PROJECT_DIR$/gatewayserver/src/main/java/com/micro/gatewayserver/config/GatewayConfig.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/../section 2 microservices/.idea/compiler.xml" beforeDir="false" afterPath="$PROJECT_DIR$/../section 2 microservices/.idea/compiler.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/../section 2 microservices/.idea/encodings.xml" beforeDir="false" afterPath="$PROJECT_DIR$/../section 2 microservices/.idea/encodings.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/../section 2 microservices/.idea/misc.xml" beforeDir="false" afterPath="$PROJECT_DIR$/../section 2 microservices/.idea/misc.xml" afterDir="false" />
@@ -60,27 +59,27 @@
     <option name="hideEmptyMiddlePackages" value="true" />
     <option name="showLibraryContents" value="true" />
   </component>
-  <component name="PropertiesComponent">{
-  &quot;keyToString&quot;: {
-    &quot;Application.AccountsApplication.executor&quot;: &quot;Run&quot;,
-    &quot;Application.CardsApplication.executor&quot;: &quot;Run&quot;,
-    &quot;Application.ConfigserverApplication.executor&quot;: &quot;Run&quot;,
-    &quot;Application.EurekaserverApplication.executor&quot;: &quot;Run&quot;,
-    &quot;Application.GatewayserverApplication.executor&quot;: &quot;Run&quot;,
-    &quot;Application.LoansApplication.executor&quot;: &quot;Run&quot;,
-    &quot;ModuleVcsDetector.initialDetectionPerformed&quot;: &quot;true&quot;,
-    &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
-    &quot;RunOnceActivity.TerminalTabsStorage.copyFrom.TerminalArrangementManager.252&quot;: &quot;true&quot;,
-    &quot;RunOnceActivity.git.unshallow&quot;: &quot;true&quot;,
-    &quot;git-widget-placeholder&quot;: &quot;main&quot;,
-    &quot;kotlin-language-version-configured&quot;: &quot;true&quot;,
-    &quot;last_opened_file_path&quot;: &quot;D:/Coding Lectures/microservices/Section 9 Gateway , Routing and Cross Cutting Concern/images&quot;,
-    &quot;project.structure.last.edited&quot;: &quot;Artifacts&quot;,
-    &quot;project.structure.proportion&quot;: &quot;0.0&quot;,
-    &quot;project.structure.side.proportion&quot;: &quot;0.2&quot;,
-    &quot;settings.editor.selected.configurable&quot;: &quot;preferences.lookFeel&quot;
+  <component name="PropertiesComponent"><![CDATA[{
+  "keyToString": {
+    "Application.AccountsApplication.executor": "Run",
+    "Application.CardsApplication.executor": "Run",
+    "Application.ConfigserverApplication.executor": "Run",
+    "Application.EurekaserverApplication.executor": "Run",
+    "Application.GatewayserverApplication.executor": "Run",
+    "Application.LoansApplication.executor": "Run",
+    "ModuleVcsDetector.initialDetectionPerformed": "true",
+    "RunOnceActivity.ShowReadmeOnStart": "true",
+    "RunOnceActivity.TerminalTabsStorage.copyFrom.TerminalArrangementManager.252": "true",
+    "RunOnceActivity.git.unshallow": "true",
+    "git-widget-placeholder": "main",
+    "kotlin-language-version-configured": "true",
+    "last_opened_file_path": "D:/Coding Lectures/microservices/Section 9 Gateway , Routing and Cross Cutting Concern/images",
+    "project.structure.last.edited": "Artifacts",
+    "project.structure.proportion": "0.0",
+    "project.structure.side.proportion": "0.2",
+    "settings.editor.selected.configurable": "editor.preferences.inline.completion"
   }
-}</component>
+}]]></component>
   <component name="RecentsManager">
     <key name="CopyFile.RECENT_KEYS">
       <recent name="D:\Coding Lectures\microservices\Section 9 Gateway , Routing and Cross Cutting Concern\images" />
