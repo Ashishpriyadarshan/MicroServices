@@ -52,3 +52,59 @@
 ### 1st Commit: "Introduction to Resiliency | Ways to implement it | Importance of Resiliency in a microservices based architect"
 ___
 
+### Circuit Breaker Pattern:
+* It is a very famous pattern followed by most of the microservices across the world.
+* It is similar to a electric circuit.
+* Suppose there are several devices connected in a circuit and at the beginning of the circuit sits a fuse/breaker .
+* The task of the fuse/breaker is to detect if there is any excess current flowing .
+* If excess current flows so the fuse breakers causing the current to stop flowing.
+* It has 2 states : closed when the circuit is ok , open when the circuit is faulty and needs time to recover.
+* Well now let's understand how circuit breaker pattern works in the microservices environment.
+  * Suppose 2 services are there Service A and Service B .
+  * Suppose the task of service A is to send requests to service B .
+  * Now due to some reason be it due to network reasons or internal reasons of service B , the service A is getting affected .
+  * Slow response by service B due to which threads of service A are waiting or are getting occupied for longer period of time due to which the load on service A is also increasing.
+  * So if the service B doesnt get back to its normal working state then it will cause the failure of service A also.
+  * So we need to do something .
+  * Solution:
+    * We have to monitor the response time and other factors of service B , And we will do all this by sitting at service A.
+    * Service A will keep monitoring service B and it will decide whether to send any furthur requests to B or not.
+    * And also if Service A is not sending any requests to service B then definitely it has to handle them either by rejecting the requests or by calling some other fallback methods.
+    * And also After some time duration when Service A feels that maybe service B would have recoverd by now so it starts sending the incoming requests to service B but in a specific defined and lesser numbers to test if service B can properly process and send back the response or not.
+    * If again the service B is failing to send back responses properly then Service A again will stop sending requests to service B.
+    * All the above things which i mentioned under the Solution: This is know as the circuit breaker pattern.
+* Circuit Breaker Pattern:
+  * In a distributed environment , calls to remote resources and service can fail due to transient faults , such as slow network connections , timeouts or the resources being overcommitted or temporarily unavailable.
+  * These faults typically correct themselves after a short period of time and a robust cloud application should be prepared to handle them.
+  * The circuit breaker pattern which is inspired from electrical circuit breaker will monitor the remote calls . If the calls take too long and the no of failed call attempts cross a certain threshold then the circuit breaker will intercede and kill the call.
+  * Also, the circuit breaker will monitor all calls to a remote resource , and if enough calls fail , the circuit break implementation will pop , failing fast and preventing future calls to the failing remote resource.
+  * The circuit breaker pattern also enables a application to detect whether the fault has been resolved . If the problem appears to have been fixed, the application can try to invoke the operation.
+  * Advantages of circuit breaker pattern:
+    * Fail fast.
+    * Fail gracefully.
+    * Recover seamlessly.
+* There are 3 states : 
+    * Closed when everything is fine and working.
+    * Open when the other service is healing or handling its prebooked or other exisiting requests and in this stage calls are not made to the healing service so that it first solves its existing requests and after that let it heal.
+    * Half-Open state when the service is tested by sending a limited no or actual requests rather than sending so many.
+
+### Circuit breaker can be implmented both in service to service call and Gateway Server too.
+### Difference is incase of gateway server we will have to write the Reactive coding syntax's .
+
+### Diagram of a Circuit Breaker in terms of Electric Circuit:
+* ![Electric Circuit.png](images/Electric%20Circuit.png)
+
+### Diagramatic Flow of Circuit Breaker in terms of microservices Calls and Gateway Server:
+* ![Circuit Breaker pattern.png](images/Circuit%20Breaker%20pattern.png)
+
+
+### Circuit Breaker Flow and Sliding window:
+* Image 1:
+    * ![Circuit Breaker and Sliding window.png](images/Circuit%20Breaker%20and%20Sliding%20window.png)
+* Image 2:
+    * ![Circuit Breaker and sliding window 2.png](images/Circuit%20Breaker%20and%20sliding%20window%202.png)
+
+
+### 2nd Commit: " Circuit Breaker Pattern Introduction and Cases"
+
+___
