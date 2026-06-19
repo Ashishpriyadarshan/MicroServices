@@ -36,3 +36,16 @@ logging:
     com:
       micro:
         gatewayserver: DEBUG
+
+
+resilience4j:
+  circuitbreaker:
+    instances:
+      accountsServiceCircuitBreaker:
+        failure-rate-threshold: 50
+        minimum-number-of-calls: 10
+        sliding-window-type: COUNT_BASED
+        sliding-window-size: 10
+        wait-duration-in-open-state: 30s
+        permitted-number-of-calls-in-half-open-state: 3
+        automatic-transition-from-open-to-half-open-enabled: true

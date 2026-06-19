@@ -21,7 +21,9 @@ public class GatewayConfig {
                         route->route.path("/microdemo/accounts/**")
                                 .filters(f -> f.rewritePath("/microdemo/accounts/(?<segment>.*)",
                                         "/${segment}")
-                                        .addResponseHeader("X-Response-Time", LocalDateTime.now().toString()))
+                                        .addResponseHeader("X-Response-Time", LocalDateTime.now().toString())
+                                        .circuitBreaker(config -> config.setName("accountsServiceCircuitBreaker")
+                                                .setFallbackUri("forward:/accountsFallbackController")))
                                 .uri("lb://ACCOUNTS"))
 
                 //Loans service Routing
