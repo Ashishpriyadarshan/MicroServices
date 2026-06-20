@@ -401,3 +401,86 @@ ___
 * Another thing is you can also set the circuitbreaker time like how long do you expect the api to get a response , because by default it is 1 sec.
 
 ### 4th Commit: "Introduced Circuit Breaker in OpenFeignClients | Used CircuitBreakerNameResolver to create custom Names for CircuitBreakers | Demonstrated Stopping and pausing a Upstream Service"
+
+___
+
+
+### HTTP timeout Configurations:
+* You can specify the time under which you want the response , and beyond which an http timeout error will be thrown and the threads will be released.
+* Think of a scenario that you are trying to hit the loans app api's via gateway and for some reason the loans app is taking a long time to be it 1 min or 30 sec or maybe infinite time .
+* So what happens in this case is the resources at the gateway like threads will wait infinitely as well as the resouces at the loans app will wait for infinite time , due to which resources will be occupied for a long period of time.
+* So to avoid this we have to set a timeout configuration.
+* Timeout configuration can be set both in normal api calls and api calls where they have circuit breaker implemented.
+* Let's see some examples:
+  * Suppose we put a breakpoint in one of the api's of loans microservice:
+    * get-contact-info:
+      * ![img_89.png](images/img_89.png)
+      * ![img_91.png](images/img_91.png)
+      * See the response time is just 1.08 seconds
+    * Now let's add a breakpoint at:
+      * ![img_90.png](images/img_90.png)
+    * Now lets hit the same api again and watch what happens:
+    * ![img_92.png](images/img_92.png)
+    * Now it will be waiting like this unless i lift that breakpoint and this type of event is somewhat similiar to mimicing slow response time or other network issues.
+    * ![img_93.png](images/img_93.png)
+    * Now look at the response time which is more than 1 min .
+    * Do you think users are going to wait this long.
+  * Lets check another Api this time:
+    * accounts/api/get-contact-info via gateway:
+      * ![img_94.png](images/img_94.png)
+      * Now lets put a breakpoint at this api inside the accounts app:
+        * ![img_95.png](images/img_95.png)
+      * Lets again hit the same api:
+        * ![img_96.png](images/img_96.png)
+        * We got this response immediately and if you look at the response time then it was just 1.05 secs.
+        * But why two different behaviours like difference between loans and accounts.
+    * It is because of the circuit breaker that we have used in the route of the accounts inside the gateway which immediately executes the fallback method if there is no response under 1 sec.
+    * ![img_97.png](images/img_97.png)
+    * See here the .
+    * So circuit breaker also has a internal default timeout already configed for 1 sec which you can also.
+    * But what about the api's where we are not using any ciruit breaker.
+    * ![img_98.png](images/img_98.png)
+    * If you observer here in the response then TCP handshake is 1ms which is the time taken to establish a connection between Postman and Gateway app then , it took almost 1.05 sec for the response time which is actually the time spent by gateway to send request to accounts and the response time spent by accounts .
+
+* Now inorder to understand more about timeout configs at the gateway server we have to go to their official documentation .
+* ``https://docs.spring.io/spring-cloud-gateway/reference/spring-cloud-gateway-server-webflux/http-timeouts-configuration.html``
+* If you go to the above route then you will see two types of timeout's one is connect-timeout and another is response-timeout .
+* connect-timeout is same as TCP handshake time : which means the time within which the connection between the client and server must be established.
+* response-timeout means the time within which the client must receive a response only after connection is made , failing this time would result in response timeout.
+* IF you go to the above link of spring cloud gateway timeouts configuration then there you will see many things which i will list below:
+  * ![img_99.png](images/img_99.png)
+  *     * If you follow the above then it will set a global timeout config for all of the routes that you have mentioned inside the gateway RouteLocator.
+  * ![img_100.png](images/img_100.png)
+  * ![img_101.png](images/img_101.png)
+  *       * IF you follow the above configs then you can define timeout manually as per the route , and this will override the global timeout too.
+  * ![img_102.png](images/img_102.png)
+  *     * If you follow the above then even if you hv not given any route specific timeout config still it will not use the global timeout config.
+* Let's create a global timeout config and test the Loans API and let's check how it works:
+  * Open the application.yml of the gatewayServer app.
+  * ![img_103.png](images/img_103.png)
+  * This the config that we have to use since we are using spring webflux reactive gateway so we just cannot use:
+  * spring.cloud.gateway.httpclient.connect-timeout and response-timeout .
+  * Rather we have to use the : spring.cloud.gateway.server.webflux.httpclient.connect-timeout and responsetimeout .
+  * Now we have set the timeout for connection as 2000 which is 2sec and response timeout as 5s so.
+  * Now lets add the break-pointer at the same spot :
+  * ![img_104.png](images/img_104.png)
+  * Now lets hit the same api again:
+    * ``http://localhost:8072/microdemo/loans/api/get-contact-info``
+    * Response: ![img_105.png](images/img_105.png)
+    * We got the Gateway timeout and the Response time was 5.63 sec so our response-timeout worked it waited for 5 secs then Came with this error at us.
+  * What about the connect-timeout:
+    * Do one thing just stop the loans app then send the request again:
+      * ![img_106.png](images/img_106.png)
+      * See this time it waited for 2 secs and since it couldn't connect with the loans app so it came back with this error.
+* Let's test the accounts get-info api , first lets put a break pointer there too:
+  * ![img_107.png](images/img_107.png)
+  * Now lets hit the api via gateway:
+  * ![img_108.png](images/img_108.png)
+  * Even after putting the global response-timeout as 5s still we got a response under 1.5 sec.
+  * It is because we have implemented a circuitbreaker for the accounts route which has a internal default timeout running .
+  * And it waits for just 1 sec and also it has a fallback that is the reason instead of error we got a good response.
+  * We can create a custom timeout for the circuitbreaker too.
+  * ![img_109.png](images/img_109.png)
+
+
+### 5th Commit: "Http Timeout Configuration | Implementation of timeout"
