@@ -54,8 +54,16 @@ public class CustomerServiceImpl implements ICustomerService {
 
 
         CustomerDetailsDto customerDetailsDto = new CustomerDetailsDto();
-        customerDetailsDto.setLoansDto(loansDtoResponseEntity.getBody());
-        customerDetailsDto.setCardsDto(cardsDtoResponseEntity.getBody());
+        if(loansDtoResponseEntity != null)
+        {
+            customerDetailsDto.setLoansDto(loansDtoResponseEntity.getBody());
+
+        }
+        if(cardsDtoResponseEntity!=null)
+        {
+            customerDetailsDto.setCardsDto(cardsDtoResponseEntity.getBody());
+        }
+
 
         customerDetailsDto.setCustomerDto(customerDto);
 

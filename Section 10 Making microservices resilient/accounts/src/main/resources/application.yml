@@ -4,6 +4,10 @@ server:
 spring:
   application:
     name: "accounts"
+  cloud:
+    openfeign:
+      circuitbreaker:
+        enabled: true
   profiles:
     active: "default"
     ##Even if you dont mention active profile still it is ok , it will load the default accounts.yml from the config server.
@@ -76,3 +80,23 @@ logging:
       micro:
         accounts: DEBUG
 
+
+resilience4j:
+  circuitbreaker:
+    instances:
+      loans_fetchLoanDetails:
+        slidingWindowType: COUNT_BASED
+        slidingWindowSize: 10
+        minimumNumberOfCalls: 5
+        failureRateThreshold: 50
+        waitDurationInOpenState: 10s
+        permittedNumberOfCallsInHalfOpenState: 3
+        automaticTransitionFromOpenToHalfOpenEnabled: true
+      cards_fetchCard:
+        slidingWindowType: COUNT_BASED
+        slidingWindowSize: 10
+        minimumNumberOfCalls: 5
+        failureRateThreshold: 50
+        waitDurationInOpenState: 10s
+        permittedNumberOfCallsInHalfOpenState: 3
+        automaticTransitionFromOpenToHalfOpenEnabled: true
