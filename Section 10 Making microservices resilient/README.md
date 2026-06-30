@@ -483,4 +483,25 @@ ___
   * ![img_109.png](images/img_109.png)
 
 
-### 5th Commit: "Http Timeout Configuration | Implementation of timeout"
+### 5th Commit: "Http Timeout Configuration | Implementation of timeout "
+
+### Retry Pattern:
+* The retry pattern will make configured( settings done by developer ) multiple retry attempts when a service has temporarily failed.
+* This pattern is very succesful in scenarios like network disruption or service overload where one service/client may send the request multiple times to a service which is not responding or maybe failing.
+* ### Key components of Retry pattern:
+  * ``Retry Logic``: Determine how many times to retry an operation . This can be based on factors such as error codes, exceptions, or response status.
+  * ``Backoff Strategy``: Define a strategy for delaying retries to avoid overwhelming the system or increasing load on the system. This strategy involves gradually increasing the delay between each retry known as exponential backoff.
+    * Ex: Suppose we want to retry 3 times : We will go for the first retry after 1 sec of the actual request , then the second request will be done after 4 sec or maybe some exponential time after the 1st retry and the 3rd retry maybe done after 8 secs or so after the 2nd retry.
+    * The goal is to not keep a static time delay between retries.
+  * ``Circuit Breaker Integration``: We can combine Circuit Breaker with the retry pattern , like if a certain number of retries fail for any particular request then we can Open the circuit to prevent furthur attempts and then give a Reset time to the other service.
+    * Actually incase of using circuit breaker the sequence in which circuit breaker is added to the service call be it in the gateway or the in service call matters a lot.
+    * If circuit breaker is used inside the retry pattern then the normal request will be registered inside the circuit breaker window , as well the retries too like 1st , 2nd and 3rd etc.
+    * And suppose a new fresh request comes in the for this the normal request will be registerd inside the circuit breaker window and its retries too .
+    * Like this the circuit might get OPEN easily.
+    * But if the circuit breaker comes first and inside it we have the retry pattern then no matter how many retries is done by the retry pattern only the final response be it failed or successful will be registered inside the circuit breaker.
+  * ``Idempotent Operation``: Make sure no matter the number of retries it always produces the same result.
+    * Because if the http request contains some kind of operations which might disturb the DB and we are doing it again and again then brother peace out the DB records will get GG.
+    * Ex: You can retry GET operations again and again no matter how many times you try it the result will always be the same.
+* ``Notes of Retry``: ![Retry 1.png](images/Retry%201.png)
+
+### 6th Commit: "Retry Pattern Introduction"
