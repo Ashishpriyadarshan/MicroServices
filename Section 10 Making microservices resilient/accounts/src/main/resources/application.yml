@@ -27,11 +27,11 @@ spring:
   config:
     import: "optional:configserver:http://localhost:8071/"
 
-  rabbitmq:
-    host: "localhost"
-    port: 5672
-    username: "guest"
-    password: "guest"
+#  rabbitmq:
+#    host: "localhost"
+#    port: 5672
+#    username: "guest"
+#    password: "guest"
 
 
 management:
@@ -82,6 +82,18 @@ logging:
 
 
 resilience4j:
+  retry:
+    instances:
+      getBuildInfoRetry:
+        max-attempts: 3
+        wait-duration: 500
+        enable-exponential-backoff: true
+        exponential-backoff-multiplier: 2
+        retry-exceptions:
+          - java.util.concurrent.TimeoutException
+
+
+
   circuitbreaker:
     instances:
       loans_fetchLoanDetails:
@@ -100,3 +112,6 @@ resilience4j:
         waitDurationInOpenState: 10s
         permittedNumberOfCallsInHalfOpenState: 3
         automaticTransitionFromOpenToHalfOpenEnabled: true
+
+
+

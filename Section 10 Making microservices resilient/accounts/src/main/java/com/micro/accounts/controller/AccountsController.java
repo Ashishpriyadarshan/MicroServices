@@ -8,6 +8,7 @@ import com.micro.accounts.dto.ResponseDto;
 import com.micro.accounts.entity.Accounts;
 import com.micro.accounts.service.IAccountsService;
 import com.micro.accounts.service.impl.AccountsServiceImpl;
+import io.github.resilience4j.retry.annotation.Retry;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
@@ -19,6 +20,8 @@ import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.Pattern;
 import lombok.AllArgsConstructor;
 import lombok.RequiredArgsConstructor;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
@@ -32,6 +35,7 @@ import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import java.lang.annotation.Repeatable;
+import java.util.concurrent.TimeoutException;
 
 @RestController
 @RequestMapping(path = "/api",produces = {MediaType.APPLICATION_JSON_VALUE})
@@ -46,6 +50,7 @@ import java.lang.annotation.Repeatable;
 //MediaType from org.springframework.http.MediaType then APPLICATION_JSON_VALUE means it will always return a json type value
 public class AccountsController {
 
+    private static final Logger logger = LoggerFactory.getLogger(AccountsController.class);
 
     @Qualifier("accountsServiceImplV1")
     private final IAccountsService accountsServiceImpl;
@@ -240,11 +245,21 @@ public class AccountsController {
                                     )
                     }
             )
+    @Retry(name="getBuildInfoRetry",fallbackMethod = "getBuildInfoFallback")
     @GetMapping("/get-build-version")
-     public ResponseEntity<String> appBuildVersion()
-     {
-         return ResponseEntity.status(HttpStatus.OK).body(buildVersion);
+     public ResponseEntity<String> appBuildVersion()  {
+         logger.debug("get-build-version was invoked");
+         throw new NullPointerException();
+//         return ResponseEntity.status(HttpStatus.OK).body(buildVersion);
      }
+
+    public ResponseEntity<String> getBuildInfoFallback(Throwable throwable)
+    {
+        logger.debug("Fallback of get-build-version was invoked");
+        return ResponseEntity.status(HttpStatus.OK).
+                body("Random Build Version");
+
+    }
 
 
 
