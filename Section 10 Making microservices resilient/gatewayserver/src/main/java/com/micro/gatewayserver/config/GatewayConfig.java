@@ -4,7 +4,10 @@ import org.springframework.cloud.gateway.route.RouteLocator;
 import org.springframework.cloud.gateway.route.builder.RouteLocatorBuilder;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpMethod;
+import org.springframework.http.HttpStatus;
 
+import java.time.Duration;
 import java.time.LocalDateTime;
 
 @Configuration
@@ -39,7 +42,11 @@ public class GatewayConfig {
                         route -> route.path("/microdemo/cards/**")
                                 .filters(f -> f.rewritePath("/microdemo/cards/(?<segment>.*)",
                                         "/${segment}")
-                                        .addResponseHeader("X-Response-Header",LocalDateTime.now().toString()))
+                                        .addResponseHeader("X-Response-Header",LocalDateTime.now().toString())
+                                        .retry(retryConfig -> retryConfig.setRetries(3)
+                                                .setMethods(HttpMethod.GET)
+                                                .setStatuses(HttpStatus.REQUEST_TIMEOUT, HttpStatus.SERVICE_UNAVAILABLE,HttpStatus.INTERNAL_SERVER_ERROR)
+                                                .setBackoff(Duration.ofMillis(100),Duration.ofMillis(1000),2,true)))
                                 .uri("lb://CARDS"))
 
                 .build();

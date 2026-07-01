@@ -353,6 +353,8 @@ public class CardsController {
     @GetMapping("/get-contact-info")
     public ResponseEntity<CardsContactInfoDto> getContactInfo()
     {
+
+        logger.debug("Invoked Cards get-contact-info api");
         return ResponseEntity.status(HttpStatus.OK)
                 .body(cardsContactInfoDto);
     }
