@@ -5,12 +5,16 @@ import io.github.resilience4j.timelimiter.TimeLimiterConfig;
 import org.springframework.cloud.circuitbreaker.resilience4j.ReactiveResilience4JCircuitBreakerFactory;
 import org.springframework.cloud.circuitbreaker.resilience4j.Resilience4JConfigBuilder; // ADDED: Required for builder
 import org.springframework.cloud.client.circuitbreaker.Customizer; // FIXED: Changed from java.beans.Customizer
+import org.springframework.cloud.gateway.filter.ratelimit.KeyResolver;
+import org.springframework.cloud.gateway.filter.ratelimit.RedisRateLimiter;
 import org.springframework.cloud.gateway.route.RouteLocator;
 import org.springframework.cloud.gateway.route.builder.RouteLocatorBuilder;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
+import reactor.core.publisher.Mono;
+
 import java.time.Duration;
 import java.time.LocalDateTime;
 
@@ -50,7 +54,9 @@ public class GatewayConfig {
                 route -> route.path("/microdemo/loans/**")
                         .filters(f -> f.rewritePath("/microdemo/loans/(?<segment>.*)",
                                 "/${segment}")
-                                .addResponseHeader("X-Response-Time",LocalDateTime.now().toString()))
+                                .addResponseHeader("X-Response-Time",LocalDateTime.now().toString())
+                                .requestRateLimiter(config -> config.setRateLimiter(redisRateLimiter())
+                                        .setKeyResolver(userKeyResolver())))
                         .uri("lb://LOANS"))
 
                 //Cards Service Routing
@@ -66,6 +72,24 @@ public class GatewayConfig {
                                 .uri("lb://CARDS"))
 
                 .build();
+    }
+
+
+    @Bean
+    public RedisRateLimiter redisRateLimiter()
+    {
+        // Parameters: defaultReplenishRate, defaultBurstCapacity, defaultRequestedTokens
+        // 1: Replenish rate of 1 token/requests per second
+        // 1: Burst capacity allows up to 1 requests in a sudden spike
+        // 1: Every single request consumes exactly 1 token
+        return new RedisRateLimiter(5,20,5);
+    }
+
+    @Bean
+    KeyResolver userKeyResolver()
+    {
+        return exchange -> Mono.justOrEmpty(exchange.getRequest().getHeaders().getFirst("user"))
+                .defaultIfEmpty("anonymous");
     }
 
 }
