@@ -8,6 +8,7 @@ import com.micro.accounts.dto.ResponseDto;
 import com.micro.accounts.entity.Accounts;
 import com.micro.accounts.service.IAccountsService;
 import com.micro.accounts.service.impl.AccountsServiceImpl;
+import io.github.resilience4j.ratelimiter.annotation.RateLimiter;
 import io.github.resilience4j.retry.annotation.Retry;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
@@ -317,6 +318,7 @@ public class AccountsController {
                                     )
                     }
             )
+    @RateLimiter(name = "getJavaVersionRateLimiter")
     @GetMapping("/get-java-version")
     public ResponseEntity<String> envVariableInfo()
     {
@@ -324,6 +326,11 @@ public class AccountsController {
                 .body(environment.getProperty("JAVA_HOME"));
     }
 
+    public ResponseEntity<String> getJavaVersionFallback(Throwable throwable)
+    {
+        return ResponseEntity.status(HttpStatus.OK)
+                .body("This is the Fallback of the get-java-version , after RaterLimit was hit");
+    }
 
     @Operation(
             summary = "get-mvn-version  REST API",

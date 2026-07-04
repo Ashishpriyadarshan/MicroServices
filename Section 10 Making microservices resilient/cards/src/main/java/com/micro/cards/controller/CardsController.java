@@ -284,6 +284,7 @@ public class CardsController {
                                     )
                     }
             )
+
     @GetMapping("/get-java-version")
     public ResponseEntity<String> envVariableInfo()
     {

@@ -185,3 +185,5 @@
 * Now compare both of their logs , now since there is only 1 parallel connections to fire all the 10 requests so you won't be finding logs like c 2 .
 * One thing for sure it would have been easy if we had the privilage to observe the parallel connections id then it would have made more sense, anyway we will learn that ahead with better Platforms for testing the server load.
   
+
+## ``Rate Limiting Pattern in Gateway is used to limit the requests from a User/Client but Rate Limiting Pattern inside a Service is used to limit the total no of requests doesnt mattern coming from how many users``

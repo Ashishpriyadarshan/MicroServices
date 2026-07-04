@@ -46,7 +46,8 @@ public class GatewayConfig {
                                         "/${segment}")
                                         .addResponseHeader("X-Response-Time", LocalDateTime.now().toString())
                                         .circuitBreaker(config -> config.setName("accountsServiceCircuitBreaker")
-                                                .setFallbackUri("forward:/accountsFallbackController")))
+                                                .setFallbackUri("forward:/accountsFallbackController"))
+                                )
                                 .uri("lb://ACCOUNTS"))
 
                 //Loans service Routing

@@ -82,6 +82,12 @@ logging:
 
 
 resilience4j:
+  ratelimiter:
+    instances:
+      getJavaVersionRateLimiter:
+        limit-for-period: 5
+        limit-refresh-period: 20s
+        timeout-duration: 5s
   retry:
     instances:
       getBuildInfoRetry:
