@@ -39,6 +39,7 @@ management:
       enabled: true
   endpoint:
     health:
+      show-details: ALWAYS
       probes:
         enabled: true
     shutdown:
@@ -46,6 +47,9 @@ management:
   info:
     env:
       enabled: true
+  metrics:
+    tags:
+      application: ${Spring.application.name}
 
 
 eureka:

@@ -27,8 +27,11 @@ management:
       exposure:
         include: "*"
   endpoint:
+    health:
+      show-details: ALWAYS
     gateway:
       access: UNRESTRICTED
+
   info:
     env:
       enabled: true
