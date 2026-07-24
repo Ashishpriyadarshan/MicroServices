@@ -1,0 +1,124 @@
+server:
+  port: 8080
+
+spring:
+  application:
+    name: "accounts"
+  cloud:
+    openfeign:
+      circuitbreaker:
+        enabled: true
+  profiles:
+    active: "default"
+    ##Even if you dont mention active profile still it is ok , it will load the default accounts.yml from the config server.
+  datasource:
+    url: jdbc:h2:mem:testdb
+    driver-class-name: org.h2.Driver
+    username: sa
+    password: ''
+  h2:
+    console:
+      enabled: true
+  jpa:
+    database-platform: org.hibernate.dialect.H2Dialect
+    hibernate:
+      ddl-auto: update
+    show-sql: true
+  config:
+    import: "optional:configserver:http://localhost:8071/"
+#
+#  rabbitmq:
+#    host: "localhost"
+#    port: 5672
+#    username: "guest"
+#    password: "guest"
+
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include:  "*"
+  health:
+    readiness-state:
+      enabled: true
+    liveness-state:
+      enabled: true
+  endpoint:
+    health:
+      show-details: ALWAYS
+      probes:
+        enabled: true
+    shutdown:
+      access: UNRESTRICTED
+
+  info:
+    env:
+      enabled: true
+
+
+
+eureka:
+  client:
+    fetch-registry: true
+    register-with-eureka: true
+    service-url:
+      defaultZone: http://localhost:8070/eureka/
+  instance:
+    prefer-ip-address: true
+
+
+info:
+  app:
+    name: "accounts"
+    description: "micro Accounts Application"
+    version: "1.0.0"
+
+
+logging:
+  level:
+    com:
+      micro:
+        accounts: DEBUG
+
+
+resilience4j:
+  ratelimiter:
+    instances:
+      getJavaVersionRateLimiter:
+        limit-for-period: 5
+        limit-refresh-period: 20s
+        timeout-duration: 5s
+  retry:
+    instances:
+      getBuildInfoRetry:
+        max-attempts: 3
+        wait-duration: 500
+        enable-exponential-backoff: true
+        exponential-backoff-multiplier: 2
+        retry-exceptions:
+          - java.util.concurrent.TimeoutException
+
+
+
+  circuitbreaker:
+    instances:
+      loans_fetchLoanDetails:
+        slidingWindowType: COUNT_BASED
+        slidingWindowSize: 10
+        minimumNumberOfCalls: 5
+        failureRateThreshold: 50
+        waitDurationInOpenState: 10s
+        permittedNumberOfCallsInHalfOpenState: 3
+        automaticTransitionFromOpenToHalfOpenEnabled: true
+      cards_fetchCard:
+        slidingWindowType: COUNT_BASED
+        slidingWindowSize: 10
+        minimumNumberOfCalls: 5
+        failureRateThreshold: 50
+        waitDurationInOpenState: 10s
+        permittedNumberOfCallsInHalfOpenState: 3
+        automaticTransitionFromOpenToHalfOpenEnabled: true
+
+
+
