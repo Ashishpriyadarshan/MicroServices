@@ -6,6 +6,7 @@ import org.springframework.http.HttpMethod;
 import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.web.reactive.EnableWebFluxSecurity;
 import org.springframework.security.config.web.server.ServerHttpSecurity;
+import org.springframework.security.oauth2.server.resource.authentication.ReactiveJwtAuthenticationConverterAdapter;
 import org.springframework.security.web.server.SecurityWebFilterChain;
 
 @Configuration
@@ -17,12 +18,19 @@ public class SecurityConfig {
     {
         serverHttpSecurity.authorizeExchange(exchange->
                 exchange.pathMatchers(HttpMethod.GET).permitAll()
-                        .pathMatchers("/microdemo/accounts/**").authenticated()
-                        .pathMatchers("/microdemo/cards/**").authenticated()
-                        .pathMatchers("/microdemo/loans/**").authenticated())
+                        .pathMatchers("/microdemo/accounts/**").hasRole("ACCOUNTS")
+                        .pathMatchers("/microdemo/cards/**").hasRole("CARDS")
+                        .pathMatchers("/microdemo/loans/**").hasRole("LOANS"))
                 .oauth2ResourceServer(oAuth2ResourceServerSpec ->
                         oAuth2ResourceServerSpec
-                                .jwt(Customizer.withDefaults()));
+                                .jwt(jwtSpec -> jwtSpec.jwtAuthenticationConverter(
+                                        new ReactiveJwtAuthenticationConverterAdapter(
+                                                new KeycloakRoleConverter()
+                                        )
+                                )
+                                )
+                );
+
         serverHttpSecurity.csrf(csrfSpec -> csrfSpec.disable());
         return serverHttpSecurity.build();
     }
