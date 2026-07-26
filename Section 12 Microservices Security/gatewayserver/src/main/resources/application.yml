@@ -16,6 +16,20 @@ spring:
     import: "optional:configserver:http://localhost:8071/"
   cloud:
     gateway:
+      globalcors:
+        cors-configurations:
+          '[/**]':
+            allowedOrigins:
+              - "http://localhost:5173"
+            allowedMethods:
+              - GET
+              - POST
+              - PUT
+              - DELETE
+              - OPTIONS
+            allowedHeaders:
+              - "*"
+            allowedCredentials: true
       server:
         webflux:
           httpclient:

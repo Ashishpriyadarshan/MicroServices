@@ -14,25 +14,54 @@ import org.springframework.security.web.server.SecurityWebFilterChain;
 public class SecurityConfig {
 
     @Bean
-    public SecurityWebFilterChain securityWebFilterChain(ServerHttpSecurity serverHttpSecurity)
-    {
-        serverHttpSecurity.authorizeExchange(exchange->
-                exchange.pathMatchers(HttpMethod.GET).permitAll()
+    public SecurityWebFilterChain securityWebFilterChain(ServerHttpSecurity serverHttpSecurity) {
+
+        serverHttpSecurity.cors(Customizer.withDefaults());
+
+        serverHttpSecurity.authorizeExchange(exchange -> exchange
+
+                        // ---------------- SECURED GET APIs ----------------
+                        .pathMatchers(HttpMethod.OPTIONS, "/**").permitAll()
+                        .pathMatchers(HttpMethod.GET,"/microdemo/accounts/api/get-contact-info",
+                                "/microdemo/loans/api/get-contact-info",
+                                "/microdemo/cards/api/get-contact-info").permitAll()
+                        .pathMatchers(HttpMethod.GET,
+                                "/microdemo/accounts/api/fetch",
+                                "/microdemo/accounts/api/fetchCustomer")
+                        .hasRole("ACCOUNTS")
+
+                        .pathMatchers(HttpMethod.GET,
+                                "/microdemo/cards/api/fetch")
+                        .hasRole("CARDS")
+
+                        .pathMatchers(HttpMethod.GET,
+                                "/microdemo/loans/api/fetch")
+                        .hasRole("LOANS")
+
+                        // ---------------- Other secured APIs ----------------
+
                         .pathMatchers("/microdemo/accounts/**").hasRole("ACCOUNTS")
                         .pathMatchers("/microdemo/cards/**").hasRole("CARDS")
-                        .pathMatchers("/microdemo/loans/**").hasRole("LOANS"))
-                .oauth2ResourceServer(oAuth2ResourceServerSpec ->
-                        oAuth2ResourceServerSpec
-                                .jwt(jwtSpec -> jwtSpec.jwtAuthenticationConverter(
-                                        new ReactiveJwtAuthenticationConverterAdapter(
-                                                new KeycloakRoleConverter()
-                                        )
+                        .pathMatchers("/microdemo/loans/**").hasRole("LOANS")
+
+                        // ---------------- Public GET APIs ----------------
+
+                        .pathMatchers(HttpMethod.GET).permitAll()
+
+                        // Everything else must be authenticated
+                        .anyExchange().authenticated()
+
+                )
+                .oauth2ResourceServer(oauth2 -> oauth2
+                        .jwt(jwt -> jwt.jwtAuthenticationConverter(
+                                new ReactiveJwtAuthenticationConverterAdapter(
+                                        new KeycloakRoleConverter()
                                 )
-                                )
+                        ))
                 );
 
-        serverHttpSecurity.csrf(csrfSpec -> csrfSpec.disable());
+        serverHttpSecurity.csrf(csrf -> csrf.disable());
+
         return serverHttpSecurity.build();
     }
-
 }

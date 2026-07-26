@@ -17,6 +17,9 @@ public class KeycloakRoleConverter implements Converter<Jwt, AbstractAuthenticat
     public AbstractAuthenticationToken convert(Jwt source) {
 
         Map<String, Object> realmAccess = source.getClaim("realm_access");
+        if (realmAccess == null) {
+            return new JwtAuthenticationToken(source);
+        }
 
         List<String> roles = (List<String>) realmAccess.get("roles");
 
